@@ -130,288 +130,13 @@
 </head>
 <body class="min-h-screen flex flex-col selection:bg-amber-500 selection:text-black">
 
-  <!-- ==================== SAAS AUTHENTICATION GATE (會員註冊與登入閘門) ==================== -->
-  <div id="saasAuthGate" class="min-h-screen flex flex-col justify-between bg-[#07090e] relative overflow-x-hidden z-50">
-    <!-- Ambient Casino Glow -->
-    <div class="fixed top-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-rose-600/10 rounded-full blur-3xl pointer-events-none"></div>
-
-    <!-- Top Brand Header -->
-    <div class="w-full border-b border-amber-500/20 bg-slate-950/80 backdrop-blur-md px-4 sm:px-8 py-3.5 relative z-10">
-      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1785039560457_1.png?alt=media&token=19b27497-4101-4436-bc80-b299741b7984" alt="TONY STUDIO LOGO" class="w-11 h-11 rounded-xl object-contain bg-slate-900 p-1 border border-amber-500/40 shadow-lg shadow-amber-500/20" onerror="this.src='https://placehold.co/80x80/f59e0b/0f172a?text=TONY'">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-display font-black text-base sm:text-lg tracking-wider bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-200 bg-clip-text text-transparent">VEGAS & LOTTO AI BINGO</span>
-              <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">SaaS 旗艦版</span>
-            </div>
-            <p class="text-xs text-slate-400">拉斯維加斯 & 樂透多人連線 AI 賓果平台 · 會員專屬通行閘門</p>
-          </div>
-        </div>
-        <button onclick="window.saasAuth.openCreatorModal()" class="px-3.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center gap-2 transition">
-          <i class="fa-solid fa-user-tie"></i> 創作者 TONY 顧問簡介
-        </button>
-      </div>
-    </div>
-
-    <!-- Main Auth & Creator Split Container -->
-    <div class="flex-1 max-w-6xl w-full mx-auto px-4 py-8 sm:py-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-      
-      <!-- Left 5 Cols: Auth Card (Login / Register / Forgot Password) -->
-      <div class="lg:col-span-5 order-1">
-        <div class="rounded-3xl casino-border casino-gold-glow bg-slate-900/95 p-6 sm:p-8 space-y-5 relative overflow-hidden">
-          
-          <!-- Auth Mode Tabs -->
-          <div class="flex rounded-xl bg-slate-950 p-1 border border-slate-800" id="authTabsContainer">
-            <button type="button" onclick="window.saasAuth.switchAuthTab('login')" id="authTab-login" class="flex-1 py-2.5 rounded-lg text-xs sm:text-sm font-black transition bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 shadow">
-              <i class="fa-solid fa-right-to-bracket mr-1"></i> 會員登入
-            </button>
-            <button type="button" onclick="window.saasAuth.switchAuthTab('register')" id="authTab-register" class="flex-1 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition text-slate-400 hover:text-white">
-              <i class="fa-solid fa-user-plus mr-1"></i> 註冊新帳號
-            </button>
-          </div>
-
-          <!-- Dynamic Alert Box (Green Success / Red Warning) -->
-          <div id="authMessageAlert" class="hidden rounded-xl p-3.5 text-xs sm:text-sm font-bold leading-relaxed border"></div>
-
-          <!-- Resend Verification Action Button (Shown if unverified) -->
-          <div id="resendVerifyContainer" class="hidden">
-            <button type="button" onclick="window.saasAuth.resendVerificationEmail()" class="w-full py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-amber-300 text-xs font-bold transition flex items-center justify-center gap-1.5">
-              <i class="fa-solid fa-paper-plane"></i> 重新發送驗證信至我的信箱
-            </button>
-          </div>
-
-          <!-- 1. LOGIN FORM -->
-          <form id="loginForm" onsubmit="window.saasAuth.handleLogin(event)" class="space-y-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1.5">電子郵件 (Email)</label>
-              <div class="relative">
-                <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-500 text-sm"></i>
-                <input id="loginEmail" type="email" required placeholder="請輸入註冊 Email" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-amber-400 focus:outline-none">
-              </div>
-            </div>
-
-            <div>
-              <div class="flex items-center justify-between mb-1.5">
-                <label class="text-xs font-bold text-slate-300">登入密碼</label>
-                <button type="button" onclick="window.saasAuth.switchAuthTab('forgot')" class="text-xs text-amber-400 hover:underline font-semibold">忘記密碼？</button>
-              </div>
-              <div class="relative">
-                <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-500 text-sm"></i>
-                <input id="loginPassword" type="password" required placeholder="請輸入密碼" class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-amber-400 focus:outline-none">
-                <button type="button" onclick="window.saasAuth.togglePasswordVisibility('loginPassword', 'loginEyeIcon')" class="absolute right-3.5 top-2.5 text-slate-400 hover:text-amber-400">
-                  <i id="loginEyeIcon" class="fa-solid fa-eye"></i>
-                </button>
-              </div>
-            </div>
-
-            <button type="submit" id="loginSubmitBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:brightness-110 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/25 transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-key"></i> 立即登入進入賓果大廳
-            </button>
-          </form>
-
-          <!-- 2. REGISTER FORM -->
-          <form id="registerForm" onsubmit="window.saasAuth.handleRegister(event)" class="hidden space-y-3.5">
-            <!-- Spam Folder Warm Reminder Banner -->
-            <div class="rounded-xl bg-amber-500/15 border border-amber-400/50 p-3 flex items-start gap-2.5 text-amber-200 text-xs leading-relaxed shadow-inner">
-              <i class="fa-solid fa-bell text-amber-400 text-sm mt-0.5 shrink-0 animate-bounce"></i>
-              <div>
-                <strong class="text-amber-300 font-black">溫馨提醒：</strong>註冊確認信有時會跑到「<span class="underline decoration-amber-400 font-bold text-white">垃圾郵件匣</span>」，請記得前往確認唷！點擊信中連結驗證後即可登入。
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1.5">選擇您的身份別 <span class="text-rose-400">*</span></label>
-              <div class="grid grid-cols-2 gap-2.5">
-                <label class="cursor-pointer">
-                  <input type="radio" name="regIdentity" value="TONY老師學員" checked class="peer sr-only">
-                  <div class="p-2.5 rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-amber-400 peer-checked:bg-amber-500/20 text-center transition">
-                    <div class="text-xs font-black text-amber-300"><i class="fa-solid fa-graduation-cap mr-1"></i>TONY老師學員</div>
-                    <div class="text-[10px] text-slate-400 mt-0.5">課程學員 / 企業內訓</div>
-                  </div>
-                </label>
-                <label class="cursor-pointer">
-                  <input type="radio" name="regIdentity" value="非學員(一般訪客)" class="peer sr-only">
-                  <div class="p-2.5 rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-emerald-400 peer-checked:bg-emerald-500/20 text-center transition">
-                    <div class="text-xs font-black text-emerald-300"><i class="fa-solid fa-user-check mr-1"></i>非學員(一般訪客)</div>
-                    <div class="text-[10px] text-slate-400 mt-0.5">體驗貴賓 / 活動來賓</div>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">真實姓名 <span class="text-rose-400">*</span></label>
-              <div class="relative">
-                <i class="fa-solid fa-id-card absolute left-3.5 top-3 text-slate-500 text-sm"></i>
-                <input id="regRealName" type="text" required maxlength="30" placeholder="請輸入您的真實姓名" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-amber-400 focus:outline-none">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">電子郵件 (Email) <span class="text-rose-400">*</span></label>
-              <div class="relative">
-                <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-500 text-sm"></i>
-                <input id="regEmail" type="email" required placeholder="將寄送認證信至此信箱" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-amber-400 focus:outline-none">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">設定密碼 (至少 6 位字元) <span class="text-rose-400">*</span></label>
-              <div class="relative">
-                <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-500 text-sm"></i>
-                <input id="regPassword" type="password" required minlength="6" placeholder="請設定最少 6 位數密碼" class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-amber-400 focus:outline-none">
-                <button type="button" onclick="window.saasAuth.togglePasswordVisibility('regPassword', 'regEyeIcon')" class="absolute right-3.5 top-2.5 text-slate-400 hover:text-amber-400">
-                  <i id="regEyeIcon" class="fa-solid fa-eye"></i>
-                </button>
-              </div>
-            </div>
-
-            <button type="submit" id="registerSubmitBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:brightness-110 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-envelope-circle-check"></i> 註冊帳號並發送驗證信
-            </button>
-          </form>
-
-          <!-- 3. FORGOT PASSWORD FORM -->
-          <form id="forgotForm" onsubmit="window.saasAuth.handleForgotPassword(event)" class="hidden space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-              <h3 class="text-sm font-black text-amber-400 flex items-center gap-1.5">
-                <i class="fa-solid fa-unlock-keyhole"></i> 重設您的會員密碼
-              </h3>
-              <button type="button" onclick="window.saasAuth.switchAuthTab('login')" class="text-xs text-slate-400 hover:text-white">← 返回登入</button>
-            </div>
-
-            <!-- Spam Folder Warm Reminder Banner -->
-            <div class="rounded-xl bg-amber-500/15 border border-amber-400/50 p-3 flex items-start gap-2.5 text-amber-200 text-xs leading-relaxed shadow-inner">
-              <i class="fa-solid fa-bell text-amber-400 text-sm mt-0.5 shrink-0 animate-bounce"></i>
-              <div>
-                <strong class="text-amber-300 font-black">溫馨提醒：</strong>密碼重設確認信有時會跑到「<span class="underline decoration-amber-400 font-bold text-white">垃圾郵件匣</span>」，請記得前往確認唷！
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1.5">請輸入您註冊時的 Email 信箱</label>
-              <div class="relative">
-                <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-500 text-sm"></i>
-                <input id="forgotEmail" type="email" required placeholder="name@example.com" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-amber-400 focus:outline-none">
-              </div>
-            </div>
-
-            <button type="submit" id="forgotSubmitBtn" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-paper-plane"></i> 發送密碼重設信
-            </button>
-          </form>
-
-          <!-- Divider & Google Sign-In -->
-          <div class="relative flex py-1 items-center">
-            <div class="flex-grow border-t border-slate-800"></div>
-            <span class="flex-shrink mx-3 text-[11px] text-slate-500 font-semibold uppercase">或使用快速通行</span>
-            <div class="flex-grow border-t border-slate-800"></div>
-          </div>
-
-          <button type="button" onclick="window.saasAuth.handleGoogleLogin()" class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm shadow transition flex items-center justify-center gap-2.5">
-            <svg class="w-4 h-4" viewBox="0 0 24 24">
-              <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.8C6.2 7.2 8.9 5 12 5z"/>
-              <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6l3.7 2.9c2.2-2 3.7-5 3.7-8.7z"/>
-              <path fill="#FBBC05" d="M5.3 14.8c-.2-.8-.4-1.6-.4-2.5s.2-1.7.4-2.5L1.6 7C.6 9 0 11.2 0 13.5s.6 4.5 1.6 6.5l3.7-2.9z"/>
-              <path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.1-6.7-5L1.6 17c1.9 3.9 5.8 7 10.4 7z"/>
-            </svg>
-            <span>使用 Google 帳號一鍵驗證登入</span>
-          </button>
-
-        </div>
-      </div>
-
-      <!-- Right 7 Cols: Platform Creator TONY Consultant Profile Card -->
-      <div class="lg:col-span-7 order-2 space-y-5">
-        <div class="rounded-3xl casino-border bg-gradient-to-br from-slate-900/95 via-slate-950 to-amber-950/25 p-6 sm:p-8 shadow-2xl space-y-6">
-          
-          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 border-b border-slate-800 pb-5">
-            <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" alt="TONY 楊文澤 老師" class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover border-2 border-amber-400 shadow-xl shadow-amber-500/20 shrink-0" onerror="this.src='https://placehold.co/150x150/f59e0b/0f172a?text=TONY'">
-            <div class="text-center sm:text-left space-y-2">
-              <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold">
-                <i class="fa-solid fa-crown"></i> 平台創作者簡介 · Creator Profile
-              </div>
-              <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                TONY 楊文澤 <span class="text-amber-400 text-lg sm:text-xl font-bold">老師</span>
-              </h2>
-              <div class="flex flex-wrap justify-center sm:justify-start gap-2 pt-1">
-                <span class="px-2.5 py-1 rounded-lg bg-slate-800 text-amber-300 text-xs font-bold border border-slate-700">資深數位行銷科技顧問</span>
-                <span class="px-2.5 py-1 rounded-lg bg-slate-800 text-emerald-300 text-xs font-bold border border-slate-700">生成式 AI 創作者</span>
-                <span class="px-2.5 py-1 rounded-lg bg-slate-800 text-sky-300 text-xs font-bold border border-slate-700">創業導師</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs leading-relaxed">
-            <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/90 space-y-1.5">
-              <div class="text-amber-400 font-black text-sm flex items-center gap-1.5">
-                <i class="fa-solid fa-briefcase"></i> 現職 Current
-              </div>
-              <ul class="text-slate-200 space-y-1 font-medium">
-                <li>▪ 龍華科大 數位行銷講師</li>
-                <li>▪ 智策慧 品牌行銷科技顧問</li>
-              </ul>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/90 space-y-1.5">
-              <div class="text-emerald-400 font-black text-sm flex items-center gap-1.5">
-                <i class="fa-solid fa-graduation-cap"></i> 學歷 Education
-              </div>
-              <ul class="text-slate-200 space-y-1 font-medium">
-                <li>- 台大 EMBA 商學組</li>
-                <li>- 美國 Arizona State University 互動多媒體設計</li>
-                <li>▪ 北科大 工業設計</li>
-              </ul>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/90 space-y-1.5">
-              <div class="text-sky-400 font-black text-sm flex items-center gap-1.5">
-                <i class="fa-solid fa-building-user"></i> 經歷 Experience
-              </div>
-              <ul class="text-slate-200 space-y-1 font-medium">
-                <li>▪ 脈動心聯股份有限公司 創辦人暨執行長</li>
-                <li>- 宏碁集團建碁 AOPEN 整合營銷處處長 / 全球品牌行銷總監 / 企業發言人</li>
-                <li>- 台灣數位看板多媒體聯盟 (DSMA) 副會長</li>
-              </ul>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/90 space-y-1.5">
-              <div class="text-rose-400 font-black text-sm flex items-center gap-1.5">
-                <i class="fa-solid fa-chalkboard-user"></i> 專家授課經歷
-              </div>
-              <ul class="text-slate-200 space-y-1 font-medium">
-                <li>▪ CPC 生產力中心 經營管理顧問師班 / 中小企業成長創價能量 講師</li>
-                <li>- 台大 EMBA / 長榮 EMBA / 北科大 / 政大 / 世新 業師</li>
-                <li>- 2021 MarTech 行銷科技行銷長認證班 講師</li>
-                <li>- 2021/2024/2025 T大使與產業尖兵 講師</li>
-                <li>- 2025 新光人壽 AI 工具應用 企業內訓講師</li>
-              </ul>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Auth Gate Footer -->
-    <div class="border-t border-slate-800/80 bg-slate-950 py-3.5 px-4 text-center text-xs text-slate-400 relative z-10">
-      © 2020 TonyStudio. 本學習平台由 TONY 楊文澤資深AI科技顧問設計. All Rights Reserved.
-    </div>
-  </div>
-
-  <!-- ==================== MAIN APP CONTENT (登入並通過信箱驗證後解鎖顯示) ==================== -->
-  <div id="mainAppContent" class="hidden min-h-screen flex flex-col">
-
   <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-amber-500/30 px-3 sm:px-6 py-2.5">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
       
       <!-- Brand, Room Badge & AI Engine Status -->
       <div class="flex items-center gap-3">
         <button onclick="window.app.switchMainTab('lobby')" class="flex items-center gap-2.5 group text-left">
-          <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1785039560457_1.png?alt=media&token=19b27497-4101-4436-bc80-b299741b7984" alt="LOGO" class="w-10 h-10 rounded-xl object-contain bg-slate-900 p-0.5 border border-amber-500/40 shadow-lg shadow-amber-500/20 group-hover:scale-105 transition" onerror="this.src='https://placehold.co/80x80/f59e0b/0f172a?text=TONY'">
+          <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1785039560457_1.png?alt=media&token=19b27497-4101-4436-bc80-b299741b7984" alt="TONY STUDIO LOGO" onerror="this.src='https://placehold.co/80x80/f59e0b/0f172a?text=TONY'" class="w-11 h-11 rounded-xl object-contain bg-slate-900 p-1 border border-amber-500/40 shadow-lg shadow-amber-500/20 group-hover:scale-105 transition">
           <div>
             <div class="flex items-center gap-2 flex-wrap">
               <span class="font-display font-black text-sm sm:text-base tracking-wider bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-200 bg-clip-text text-transparent">VEGAS & LOTTO AI BINGO</span>
@@ -449,17 +174,16 @@
         </button>
       </nav>
 
-      <!-- Right Controls: Admin Dashboard, Creator Info, QR Code Modal, Voice, Cloud & Logout -->
-      <div class="flex items-center gap-1.5 sm:gap-2 order-2 xl:order-3 flex-wrap">
-        <!-- Admin Only Button -->
-        <button onclick="window.saasAuth.openAdminModal()" id="navAdminDashboardBtn" class="hidden px-3 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-amber-500 hover:brightness-110 text-white text-xs font-black flex items-center gap-1.5 shadow-lg shadow-rose-600/30 transition">
-          <i class="fa-solid fa-shield-halved"></i>
-          <span>進入管理後台</span>
+      <!-- Right Controls: Creator Profile, Admin Dashboard, QR Code, Voice, API Key & Logout -->
+      <div class="flex items-center gap-1.5 sm:gap-2 order-2 xl:order-3 flex-wrap justify-end">
+        <button onclick="window.app.openCreatorModal()" class="px-2.5 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-200 text-xs font-bold flex items-center gap-1.5 transition" title="關於創作者 TONY 楊文澤顧問">
+          <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" alt="TONY" class="w-4 h-4 rounded-full object-cover">
+          <span class="hidden md:inline">TONY顧問簡介</span>
         </button>
 
-        <button onclick="window.saasAuth.openCreatorModal()" title="關於創作者 TONY 楊文澤顧問" class="px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center gap-1.5 transition">
-          <i class="fa-solid fa-user-tie"></i>
-          <span class="hidden md:inline">TONY顧問</span>
+        <button onclick="window.app.openAdminModal()" id="adminDashboardBtn" class="hidden px-3 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-amber-600 hover:brightness-110 text-white text-xs font-black flex items-center gap-1.5 shadow-lg shadow-rose-600/30 transition">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>進入管理後台</span>
         </button>
 
         <button onclick="window.app.openQrModal()" title="顯示手機掃碼入場 QR Code" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-amber-300 text-xs font-bold flex items-center gap-1.5 transition">
@@ -474,16 +198,13 @@
 
         <button onclick="window.app.openApiKeyModal()" id="apiKeyStatusBtn" class="px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 transition">
           <i class="fa-solid fa-cloud text-emerald-400"></i>
-          <span id="apiKeyStatusText" class="hidden sm:inline">AI / 設定</span>
+          <span id="apiKeyStatusText" class="hidden sm:inline">AI 設定</span>
         </button>
 
-        <!-- Logged-in Member Badge & Logout -->
-        <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1">
-          <span id="navUserBadge" class="text-[11px] font-bold text-amber-300 max-w-[110px] truncate">會員</span>
-          <button onclick="window.saasAuth.handleLogout()" title="登出系統" class="text-xs text-rose-400 hover:text-rose-300 font-bold pl-1 border-l border-slate-700">
-            <i class="fa-solid fa-power-off"></i>
-          </button>
-        </div>
+        <button onclick="window.app.logoutSaas()" id="saasLogoutBtn" title="登出帳號" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-rose-950/80 border border-slate-700 hover:border-rose-500/50 text-slate-300 hover:text-rose-200 text-xs font-bold flex items-center gap-1 transition">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span id="headerMemberName" class="hidden lg:inline">登出</span>
+        </button>
       </div>
 
     </div>
@@ -720,18 +441,36 @@
             </div>
 
             <div class="md:col-span-8 rounded-2xl bg-slate-900/95 border border-rose-500/30 p-4 flex flex-col justify-between space-y-2.5">
-              <div class="flex items-center justify-between">
-                <h4 class="text-xs sm:text-sm font-black text-rose-400 flex items-center gap-1.5">
-                  <i class="fa-solid fa-bell animate-bounce"></i> 現場連線學員 & 聽牌警報榜 (1-to-Go)
-                </h4>
-                <div class="flex items-center gap-2">
-                  <span id="stagePreBingoBadge" class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-xs font-bold">0 人聽牌</span>
-                  <button onclick="window.app.spawnSimulatedPlayers(3)" class="text-[11px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 font-bold">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                <!-- 雙頁籤切換：聽牌警報雷達 vs 當場即時排行榜 -->
+                <div class="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                  <button onclick="window.app.switchStageBoardTab('alerts')" id="stageBoardTab-alerts" class="px-2.5 py-1 rounded-lg text-xs font-black transition flex items-center gap-1.5 bg-rose-600 text-white shadow">
+                    <i class="fa-solid fa-bell animate-bounce"></i> 🔔 聽牌警報雷達
+                    <span id="stagePreBingoBadge" class="px-1.5 py-0.2 rounded-full bg-black/40 text-amber-300 text-[10px] font-mono">0人</span>
+                  </button>
+                  <button onclick="window.app.switchStageBoardTab('ranking')" id="stageBoardTab-ranking" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-trophy text-amber-400"></i> 🏆 當場即時排行榜
+                    <span id="stageTotalPlayersBadge" class="px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 text-[10px] font-mono">1人</span>
+                  </button>
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                  <button onclick="window.app.spawnSimulatedPlayers(3)" class="text-[11px] px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30 font-bold transition">
                     +虛擬玩家
+                  </button>
+                  <button onclick="window.app.clearStaleRoomPlayers()" title="清除舊局離線殘留名單" class="text-[11px] px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-broom"></i>
                   </button>
                 </div>
               </div>
-              <div id="stageWinnersList" class="space-y-1.5 max-h-40 overflow-y-auto text-xs pr-1">
+
+              <!-- 面板 1：純聽牌警報雷達 (僅列出差 1 格即將連線的聽牌玩家，不排名次避免誤解) -->
+              <div id="stagePreBingoRadarList" class="space-y-1.5 max-h-40 overflow-y-auto text-xs pr-1">
+                <!-- Populated by JS -->
+              </div>
+
+              <!-- 面板 2：當場即時連線排行榜 (依 BINGO 狀態 > 已完成線數 > 聽牌數 > 命中格數 嚴格排序) -->
+              <div id="stageLiveRankingList" class="hidden space-y-1.5 max-h-40 overflow-y-auto text-xs pr-1">
                 <!-- Populated by JS -->
               </div>
             </div>
@@ -1171,213 +910,305 @@ service cloud.firestore {
   <!-- TOAST NOTIFICATION -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
-  <!-- MODAL 4: TONY CONSULTANT CREATOR PROFILE MODAL -->
-  <div id="creatorProfileModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="w-full max-w-3xl rounded-3xl casino-border casino-gold-glow bg-slate-900 p-6 sm:p-8 space-y-5 relative max-h-[90vh] overflow-y-auto animate-ball-pop">
-      <button onclick="window.saasAuth.closeCreatorModal()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center">
+  <!-- ==================== SAAS AUTH GATE OVERLAY (未登入時鎖定全站) ==================== -->
+  <div id="saasAuthGate" class="fixed inset-0 z-[60] bg-slate-950 overflow-y-auto flex items-center justify-center p-4" style="background-image: radial-gradient(circle at 20% 20%, rgba(245, 158, 11, 0.16) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(225, 29, 72, 0.16) 0%, transparent 40%);">
+    <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-12 rounded-3xl casino-border casino-gold-glow bg-slate-900/95 overflow-hidden shadow-2xl my-auto">
+      
+      <!-- Left 5 Cols: Platform Brand & Creator TONY Profile Preview -->
+      <div class="lg:col-span-5 bg-gradient-to-b from-slate-950 via-slate-900 to-amber-950/30 p-6 sm:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-amber-500/30">
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1785039560457_1.png?alt=media&token=19b27497-4101-4436-bc80-b299741b7984" alt="LOGO" class="w-14 h-14 rounded-2xl object-contain bg-slate-950 p-1.5 border border-amber-400/50 shadow-lg">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-mono font-bold">ENTERPRISE AI SAAS</span>
+              <h1 class="text-lg sm:text-xl font-black text-white mt-0.5">拉斯維加斯 & 樂透 AI 賓果平台</h1>
+            </div>
+          </div>
+
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            結合 <strong class="text-amber-400">Gemini 3.8 Flash</strong> 動態出題、即時聽牌警報雷達與百人雲端連線的教學與商務遊戲化互動平台。
+          </p>
+
+          <!-- Creator Card -->
+          <div class="rounded-2xl bg-slate-950/90 border border-amber-500/30 p-4 space-y-3">
+            <div class="flex items-center gap-3">
+              <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" alt="TONY 楊文澤老師" class="w-14 h-14 rounded-2xl object-cover border-2 border-amber-400 shadow-md">
+              <div>
+                <div class="text-[11px] font-bold text-amber-400">平台創作者 / 總架構師</div>
+                <div class="text-base font-black text-white">TONY 楊文澤 老師</div>
+                <div class="text-[11px] text-slate-400">資深數位行銷科技顧問 · 生成式 AI 創作者 · 創業導師</div>
+              </div>
+            </div>
+            <div class="text-[11px] text-slate-300 space-y-1 border-t border-slate-800 pt-2.5">
+              <div>▪ <strong>現職</strong>：龍華科大數位行銷講師 / 智策慧品牌行銷科技顧問</div>
+              <div>▪ <strong>經歷</strong>：脈動心聯創辦人暨執行長 / 宏碁集團建碁 AOPEN 全球品牌行銷總監</div>
+              <div>▪ <strong>學歷</strong>：台大 EMBA 商學組 / 美國 ASU 互動多媒體設計 / 北科大工業設計</div>
+            </div>
+            <button onclick="window.app.openCreatorModal()" class="w-full py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-bold transition">
+              查看 TONY 顧問完整資歷與授課經歷 →
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-4 text-[11px] text-slate-500">
+          © 2020 TonyStudio. 本學習平台由 TONY 楊文澤資深AI科技顧問設計. All Rights Reserved.
+        </div>
+      </div>
+
+      <!-- Right 7 Cols: Auth Forms (Login / Register / Forgot Password) -->
+      <div class="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-center space-y-5 bg-slate-900">
+        <!-- Mode Switcher Tabs -->
+        <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+          <button onclick="window.app.switchAuthMode('login')" id="authTab-login" class="flex-1 py-2 rounded-lg text-xs sm:text-sm font-black bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 shadow transition">
+            🔑 會員登入 (Sign In)
+          </button>
+          <button onclick="window.app.switchAuthMode('register')" id="authTab-register" class="flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white transition">
+            📝 註冊新帳號 (Sign Up)
+          </button>
+          <button onclick="window.app.switchAuthMode('reset')" id="authTab-reset" class="flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white transition">
+            📧 忘記密碼
+          </button>
+        </div>
+
+        <!-- Status Message Banner (Green for Verification Sent / Red for Unverified Warning) -->
+        <div id="authAlertBox" class="hidden p-3.5 rounded-xl border text-xs sm:text-sm font-bold leading-relaxed"></div>
+
+        <!-- Warm Reminder for Spam Folder (Shown on Register & Forgot Password) -->
+        <div id="spamFolderReminder" class="hidden p-3.5 rounded-xl bg-amber-500/15 border border-amber-400/50 text-amber-200 text-xs flex items-start gap-2.5 shadow-inner">
+          <i class="fa-solid fa-envelope-circle-check text-amber-400 text-base mt-0.5"></i>
+          <div>
+            <strong class="text-amber-300">溫馨提醒：</strong>註冊確認信或重設密碼信有時會跑到<strong class="text-white underline">「垃圾郵件匣 (Spam)」</strong>或促銷內容匣，請記得前往確認並點擊驗證連結唷！
+          </div>
+        </div>
+
+        <!-- Registration Extra Fields (Identity & Real Name) -->
+        <div id="registerExtraFields" class="hidden space-y-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1.5">1. 請選擇您的加入身份：</label>
+            <div class="grid grid-cols-2 gap-2.5">
+              <label class="cursor-pointer">
+                <input type="radio" name="memberIdentity" value="TONY老師學員" checked class="peer hidden">
+                <div class="p-3 rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-amber-400 peer-checked:bg-amber-500/15 text-center transition">
+                  <div class="text-xs sm:text-sm font-black text-amber-300">🎓 TONY老師學員</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">課堂學員 / 企業內訓學員</div>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="memberIdentity" value="非學員(一般訪客)" class="peer hidden">
+                <div class="p-3 rounded-xl border border-slate-700 bg-slate-950 peer-checked:border-sky-400 peer-checked:bg-sky-500/15 text-center transition">
+                  <div class="text-xs sm:text-sm font-black text-sky-300">🌟 非學員 (一般訪客)</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">活動來賓 / 外部體驗貴賓</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">2. 真實姓名 (將自動帶入您的賓果比賽榮譽姓名)：</label>
+            <input id="authRealNameInput" type="text" placeholder="請輸入您的真實姓名 (如：王小明)" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-amber-400 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- Email Input -->
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">電子郵件信箱 (Email)：</label>
+          <input id="authEmailInput" type="email" placeholder="example@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-amber-400 focus:outline-none">
+        </div>
+
+        <!-- Password Input with Show/Hide Eye Toggle -->
+        <div id="authPasswordFieldGroup">
+          <label class="block text-xs font-bold text-slate-300 mb-1">登入密碼 (至少 6 位字元)：</label>
+          <div class="relative">
+            <input id="authPasswordInput" type="password" placeholder="請輸入密碼" class="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-amber-400 focus:outline-none">
+            <button type="button" onclick="window.app.togglePasswordEye()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-300">
+              <i id="passwordEyeIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Primary Submit Button -->
+        <button onclick="window.app.handleAuthSubmit()" id="authPrimarySubmitBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:brightness-110 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/25 transition">
+          立即登入平台
+        </button>
+
+        <!-- Resend Verification Button (Hidden unless unverified login attempt) -->
+        <button onclick="window.app.resendVerificationEmail()" id="resendVerifyBtn" class="hidden w-full py-2 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/50 text-emerald-300 font-bold text-xs transition">
+          📨 沒收到驗證信？點此重新發送驗證信
+        </button>
+
+        <!-- Divider & Google Sign-In -->
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-slate-800"></div>
+          <span class="flex-shrink mx-3 text-slate-500 text-xs">或使用多元快速登入</span>
+          <div class="flex-grow border-t border-slate-800"></div>
+        </div>
+
+        <button onclick="window.app.loginWithGoogle()" class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-black text-xs sm:text-sm shadow flex items-center justify-center gap-2.5 transition">
+          <i class="fa-brands fa-google text-rose-500 text-base"></i>
+          <span>使用 Google 帳號一鍵驗證登入</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 4: TONY 顧問創作者完整簡介燈箱 ==================== -->
+  <div id="creatorBioModal" class="fixed inset-0 z-[70] hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl rounded-3xl casino-border bg-slate-900 p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto relative animate-ball-pop">
+      <button onclick="window.app.closeCreatorModal()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
       <div class="flex flex-col sm:flex-row items-center gap-5 border-b border-slate-800 pb-5">
-        <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" alt="TONY 楊文澤 老師" class="w-28 h-28 rounded-2xl object-cover border-2 border-amber-400 shadow-lg shrink-0" onerror="this.src='https://placehold.co/150x150/f59e0b/0f172a?text=TONY'">
-        <div class="text-center sm:text-left space-y-1.5">
-          <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold">
-            <i class="fa-solid fa-award"></i> 平台創作者簡介
-          </div>
-          <h3 class="text-2xl font-black text-white">TONY 楊文澤 老師</h3>
-          <p class="text-xs sm:text-sm text-amber-300 font-bold">資深數位行銷科技顧問 ｜ 生成式 AI 創作者 ｜ 創業導師</p>
+        <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" alt="TONY 楊文澤老師" class="w-24 h-24 rounded-3xl object-cover border-2 border-amber-400 shadow-xl">
+        <div class="text-center sm:text-left space-y-1">
+          <span class="px-3 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 text-xs font-bold">PLATFORM CREATOR</span>
+          <h2 class="text-2xl font-black text-white">TONY 楊文澤 老師</h2>
+          <p class="text-sm text-amber-300 font-bold">資深數位行銷科技顧問 · 生成式 AI 創作者 · 創業導師</p>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs leading-relaxed">
-        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5">
-          <div class="text-amber-400 font-black text-sm">現職 Current</div>
-          <ul class="text-slate-200 space-y-1">
-            <li>▪ 龍華科大 數位行銷講師</li>
-            <li>▪ 智策慧 品牌行銷科技顧問</li>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+        <div class="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-2">
+          <h4 class="font-black text-amber-400">▪ 現職 Current</h4>
+          <ul class="space-y-1 text-slate-200">
+            <li>• 龍華科大 數位行銷講師</li>
+            <li>• 智策慧 品牌行銷科技顧問</li>
+          </ul>
+          <h4 class="font-black text-amber-400 pt-2">▪ 學歷 Education</h4>
+          <ul class="space-y-1 text-slate-200">
+            <li>• 台大 EMBA 商學組</li>
+            <li>• 美國 Arizona State University 互動多媒體設計</li>
+            <li>• 北科大 工業設計</li>
           </ul>
         </div>
-        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5">
-          <div class="text-emerald-400 font-black text-sm">學歷 Education</div>
-          <ul class="text-slate-200 space-y-1">
-            <li>- 台大 EMBA 商學組</li>
-            <li>- 美國 Arizona State University 互動多媒體設計</li>
-            <li>▪ 北科大 工業設計</li>
-          </ul>
-        </div>
-        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5">
-          <div class="text-sky-400 font-black text-sm">經歷 Experience</div>
-          <ul class="text-slate-200 space-y-1">
-            <li>▪ 脈動心聯股份有限公司 創辦人暨執行長</li>
-            <li>- 宏碁集團建碁 AOPEN 整合營銷處處長 / 全球品牌行銷總監 / 企業發言人</li>
-            <li>- 台灣數位看板多媒體聯盟 (DSMA) 副會長</li>
-          </ul>
-        </div>
-        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1.5">
-          <div class="text-rose-400 font-black text-sm">專家授課經歷</div>
-          <ul class="text-slate-200 space-y-1">
-            <li>▪ CPC 生產力中心 經營管理顧問師班 / 中小企業成長創價能量 講師</li>
-            <li>- 台大 EMBA / 長榮 EMBA / 北科大 / 政大 / 世新 業師</li>
-            <li>- 2021 MarTech 行銷科技行銷長認證班 講師</li>
-            <li>- 2021/2024/2025 T大使與產業尖兵 講師</li>
-            <li>- 2025 新光人壽 AI 工具應用 企業內訓講師</li>
+
+        <div class="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-2">
+          <h4 class="font-black text-emerald-400">▪ 經歷 Experience</h4>
+          <ul class="space-y-1 text-slate-200">
+            <li>• 脈動心聯股份有限公司 創辦人暨執行長</li>
+            <li>• 宏碁集團建碁 AOPEN 整合營銷處處長 / 全球品牌行銷總監 / 企業發言人</li>
+            <li>• 台灣數位看板多媒體聯盟 (DSMA) 副會長</li>
           </ul>
         </div>
       </div>
 
-      <div class="text-center pt-2">
-        <button onclick="window.saasAuth.closeCreatorModal()" class="px-6 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition">關閉視窗</button>
+      <div class="p-4 rounded-2xl bg-slate-950/90 border border-amber-500/30 space-y-2 text-xs sm:text-sm">
+        <h4 class="font-black text-rose-400">▪ 專家授課經歷</h4>
+        <ul class="space-y-1 text-slate-200">
+          <li>• CPC 生產力中心 經營管理顧問師班 / 中小企業成長創價能量 講師</li>
+          <li>• 台大 EMBA / 長榮 EMBA / 北科大 / 政大 / 世新 業師</li>
+          <li>• 2021 MarTech 行銷科技行銷長認證班 講師</li>
+          <li>• 2021 / 2024 / 2025 T大使與產業尖兵 講師</li>
+          <li>• 2025 新光人壽 AI 工具應用 企業內訓講師</li>
+        </ul>
       </div>
     </div>
   </div>
 
-  <!-- MODAL 5: ADMIN DASHBOARD (專屬管理者後台 + CSV 匯出 + AI 分析報告輸出 Word) -->
-  <div id="adminDashboardModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-6">
-    <div class="w-full max-w-7xl rounded-3xl casino-border bg-slate-900 p-4 sm:p-6 flex flex-col max-h-[94vh] shadow-2xl">
-      
-      <!-- Top Header -->
+  <!-- ==================== MODAL 5: 專屬管理者後台 (ADMIN DASHBOARD) ==================== -->
+  <div id="adminDashboardModal" class="fixed inset-0 z-[65] hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+    <div class="w-full max-w-6xl rounded-3xl casino-border bg-slate-900 p-5 sm:p-7 flex flex-col max-h-[92vh] shadow-2xl space-y-5">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-600 to-amber-500 flex items-center justify-center text-white shadow-lg">
-            <i class="fa-solid fa-shield-halved text-lg"></i>
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-amber-500 flex items-center justify-center text-slate-950 font-black">
+            <i class="fa-solid fa-user-shield text-lg"></i>
           </div>
           <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-lg sm:text-xl font-black text-white">SaaS 專屬管理者後台 (Admin Dashboard)</h2>
-              <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 text-[11px] font-mono font-bold">RBAC 最高權限</span>
+            <h2 class="text-lg sm:text-xl font-black text-white">SaaS 系統管理者後台 (Admin Dashboard)</h2>
+            <p class="text-xs text-slate-400">最高權限創作者：<span class="text-amber-300 font-mono font-bold">mindnodeai@gmail.com</span> · 支援 RBAC 權限管理、CSV 報表與 AI 分析報告</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.app.exportMembersCsv()" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow transition">
+            <i class="fa-solid fa-file-csv"></i> 匯出會員 CSV (含 BOM)
+          </button>
+          <button onclick="window.app.closeAdminModal()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold">
+            關閉後台 ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Content Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 overflow-y-auto pr-1 flex-1">
+        <!-- Left 8 Cols: Member Table & History Logs -->
+        <div class="lg:col-span-8 space-y-4">
+          <div class="rounded-2xl bg-slate-950 border border-slate-800 p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-black text-amber-400">👥 註冊會員清冊與 RBAC 權限控管 (<span id="adminMemberCount">0</span> 人)</h3>
+              <button onclick="window.app.loadAdminMembers()" class="text-xs text-sky-400 hover:underline"><i class="fa-solid fa-rotate"></i> 重新整理</button>
             </div>
-            <p class="text-xs text-slate-400">系統創作者：<strong class="text-emerald-400 font-mono">mindnodeai@gmail.com</strong> (永久保護不可降級或刪除)</p>
+            <div class="overflow-x-auto max-h-64">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400">
+                    <th class="py-2 px-2">真實姓名 / 身份</th>
+                    <th class="py-2 px-2">電子信箱</th>
+                    <th class="py-2 px-2">註冊時間</th>
+                    <th class="py-2 px-2">登入次數</th>
+                    <th class="py-2 px-2">權限角色</th>
+                    <th class="py-2 px-2 text-right">管理操作</th>
+                  </tr>
+                </thead>
+                <tbody id="adminMembersTableBody" class="divide-y divide-slate-800/70">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Member History Log Viewer -->
+          <div class="rounded-2xl bg-slate-950 border border-slate-800 p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-black text-emerald-400">📜 會員登入與系統活動歷史紀錄</h3>
+              <span id="adminHistoryFilterLabel" class="text-[11px] text-slate-400">顯示最新全體紀錄</span>
+            </div>
+            <div id="adminHistoryLogsBox" class="max-h-40 overflow-y-auto divide-y divide-slate-800/60 text-xs">
+              <!-- Populated by JS -->
+            </div>
           </div>
         </div>
 
-        <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="window.saasAuth.exportMembersCsv()" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition flex items-center gap-1.5 shadow">
-            <i class="fa-solid fa-file-csv"></i> 匯出 CSV 名單 (含 BOM)
-          </button>
-          <button onclick="window.saasAuth.refreshMembersList()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition flex items-center gap-1">
-            <i class="fa-solid fa-rotate"></i> 重新整理
-          </button>
-          <button onclick="window.saasAuth.closeAdminModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center transition">
-            <i class="fa-solid fa-xmark text-lg"></i>
-          </button>
-        </div>
-      </div>
+        <!-- Right 4 Cols: AI Analytics Report Generator & Word (.doc) Export -->
+        <div class="lg:col-span-4 rounded-2xl bg-slate-950 border border-amber-500/40 p-4 flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="text-xs font-mono text-amber-400 uppercase font-bold">AI BUSINESS INTELLIGENCE</div>
+            <h3 class="text-base font-black text-white">📊 AI 營運分析報告 & Word 匯出</h3>
+            <p class="text-xs text-slate-400">設定分析起訖日期，由 Gemini 3.8 自動彙整學員比例、活躍度與課程互動建議，並可一鍵下載為 Word (`.doc`) 報告檔。</p>
 
-      <!-- Dashboard Sub-navigation Tabs -->
-      <div class="flex items-center justify-between flex-wrap gap-2 py-3 border-b border-slate-800/80">
-        <div class="flex gap-2">
-          <button onclick="window.saasAuth.switchAdminTab('members')" id="adminTabBtn-members" class="px-4 py-2 rounded-xl text-xs font-black bg-amber-500 text-slate-950 transition">
-            <i class="fa-solid fa-users mr-1"></i> 註冊會員管理 (<span id="adminTotalMembersCount">0</span>)
-          </button>
-          <button onclick="window.saasAuth.switchAdminTab('history')" id="adminTabBtn-history" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition">
-            <i class="fa-solid fa-clock-rotate-left mr-1"></i> 會員歷史紀錄追蹤
-          </button>
-          <button onclick="window.saasAuth.switchAdminTab('aireport')" id="adminTabBtn-aireport" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition">
-            <i class="fa-solid fa-chart-pie mr-1 text-emerald-400"></i> AI 營運分析報告 & 匯出 WORD
-          </button>
-        </div>
-        <div class="flex items-center gap-3 text-xs">
-          <span class="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">學員人數：<strong id="statStudentsCount" class="text-amber-400">0</strong></span>
-          <span class="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">一般訪客：<strong id="statGuestsCount" class="text-emerald-400">0</strong></span>
-          <span class="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">總登入人次：<strong id="statTotalLogins" class="text-sky-400">0</strong></span>
-        </div>
-      </div>
-
-      <!-- TAB 1: MEMBERS TABLE -->
-      <div id="adminView-members" class="flex-1 overflow-y-auto mt-3 space-y-3">
-        <div class="flex items-center justify-between gap-2">
-          <input id="adminMemberSearchInput" type="text" oninput="window.saasAuth.renderMembersTable()" placeholder="🔍 搜尋姓名、Email 或身份別..." class="w-full sm:w-80 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:border-amber-400 focus:outline-none">
-          <span class="text-[11px] text-slate-400">提示：點擊「歷史紀錄」可檢視該會員之所有登入與活動足跡</span>
-        </div>
-
-        <div class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr class="bg-slate-900/95 text-slate-300 border-b border-slate-800 uppercase">
-                <th class="py-3 px-3.5">真實姓名</th>
-                <th class="py-3 px-3.5">電子郵件 (Email)</th>
-                <th class="py-3 px-3.5">身份別</th>
-                <th class="py-3 px-3.5">註冊時間</th>
-                <th class="py-3 px-3.5">目前權限</th>
-                <th class="py-3 px-3.5 text-center">登錄次數</th>
-                <th class="py-3 px-3.5 text-right">權限升降級 / 歷史 / 刪除</th>
-              </tr>
-            </thead>
-            <tbody id="adminMembersTableBody" class="divide-y divide-slate-800/70 text-slate-200">
-              <!-- Populated dynamically by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- TAB 2: MEMBER ACTIVITY HISTORY LOGS -->
-      <div id="adminView-history" class="hidden flex-1 overflow-y-auto mt-3 space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800">
-          <div class="text-xs text-slate-300">
-            目前檢視對象：<strong id="historyFilterLabel" class="text-amber-400">全體會員即時歷史紀錄</strong>
-          </div>
-          <button onclick="window.saasAuth.filterMemberHistory(null)" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-amber-300 font-bold">
-            顯示全部會員紀錄
-          </button>
-        </div>
-
-        <div class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr class="bg-slate-900 text-slate-300 border-b border-slate-800">
-                <th class="py-2.5 px-3.5">時間戳記</th>
-                <th class="py-2.5 px-3.5">真實姓名</th>
-                <th class="py-2.5 px-3.5">信箱</th>
-                <th class="py-2.5 px-3.5">身份</th>
-                <th class="py-2.5 px-3.5">事件動作與詳情</th>
-              </tr>
-            </thead>
-            <tbody id="adminHistoryTableBody" class="divide-y divide-slate-800/70 text-slate-200">
-              <!-- Populated dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- TAB 3: AI ANALYTICS REPORT & WORD (.DOC) EXPORT -->
-      <div id="adminView-aireport" class="hidden flex-1 overflow-y-auto mt-3 space-y-4">
-        <div class="rounded-2xl bg-slate-950 border border-amber-500/30 p-4 flex flex-wrap items-end justify-between gap-4">
-          <div class="flex flex-wrap items-end gap-3">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">分析起始日期 (Start Date)</label>
-              <input type="date" id="reportStartDate" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:border-amber-400 focus:outline-none">
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <label class="text-slate-400 block mb-1">起始日期：</label>
+                <input id="reportStartDate" type="date" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white">
+              </div>
+              <div>
+                <label class="text-slate-400 block mb-1">結束日期：</label>
+                <input id="reportEndDate" type="date" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white">
+              </div>
             </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">分析結束日期 (End Date)</label>
-              <input type="date" id="reportEndDate" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:border-amber-400 focus:outline-none">
-            </div>
-            <button onclick="window.saasAuth.generateAiAdminReport()" id="generateAiReportBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:brightness-110 text-slate-950 font-black text-xs shadow-lg transition flex items-center gap-1.5">
-              <i class="fa-solid fa-wand-magic-sparkles"></i> 產出 AI 營運分析報告
+
+            <button onclick="window.app.generateAiAdminReport()" id="genAiReportBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:brightness-110 text-white font-black text-xs shadow transition">
+              ✨ 產出 AI 營運分析報告
             </button>
+
+            <div id="aiAdminReportPreview" class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 max-h-52 overflow-y-auto leading-relaxed whitespace-pre-wrap">點擊上方按鈕，系統將根據所選區間的會員註冊與互動數據產出分析報告...</div>
           </div>
 
-          <button onclick="window.saasAuth.exportReportToWord()" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs shadow-lg transition flex items-center gap-1.5">
-            <i class="fa-solid fa-file-word"></i> 下載輸出成 WORD 檔 (.doc)
+          <button onclick="window.app.exportAiReportToWord()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow transition">
+            <i class="fa-solid fa-file-word"></i> 下載正式 Word (.doc) 報告檔
           </button>
         </div>
-
-        <div id="aiReportContentBox" class="rounded-2xl bg-slate-950 border border-slate-800 p-5 text-xs sm:text-sm text-slate-200 leading-relaxed space-y-3 min-h-[260px]">
-          <p class="text-slate-400">請選擇上方起訖日期並點擊「產出 AI 營運分析報告」，系統將自動彙整該區間內之註冊會員結構（TONY老師學員 vs. 一般訪客比例）、累積登錄活躍度、高頻參與名單與課程行銷洞察，並支援一鍵下載為 Word (`.doc`) 正式報告文件。</p>
-        </div>
       </div>
-
     </div>
   </div>
 
   <!-- FOOTER -->
-  <footer class="border-t border-slate-800/80 bg-slate-950 py-3.5 px-4 text-center text-xs text-slate-400 mt-auto">
+  <footer class="border-t border-slate-800/80 bg-slate-950 py-3.5 px-4 text-center text-xs text-slate-400">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
       <span>© 2020 TonyStudio. 本學習平台由 TONY 楊文澤資深AI科技顧問設計. All Rights Reserved.</span>
-      <span class="text-[11px] text-slate-500">Powered by Gemini 3.8 Flash · Firebase SaaS RBAC & `game09-bingogame`</span>
+      <span class="text-[11px] text-slate-500">Powered by Gemini 3.8 Flash · Firebase SaaS RBAC & QR Deep-Link</span>
     </div>
   </footer>
-
-  </div><!-- END OF #mainAppContent -->
 
   <!-- ==================== APPLICATION SCRIPT ==================== -->
   <script>
@@ -1572,11 +1403,13 @@ service cloud.firestore {
       constructor() {
         this.sound = new SoundEngine();
         this.activeTab = "stage";
+        this.stageBoardTab = "alerts"; // 'alerts' (聽牌警報雷達) | 'ranking' (當場即時排行榜)
         this.roomCode = "8888";
 
         this.bc = ("BroadcastChannel" in window) ? new BroadcastChannel("TONY_VEGAS_BINGO_SYNC") : null;
         this.db = null;
         this.auth = null;
+        this.authMod = null;
         this.fbOps = null;
         this.user = null;
         this.unsubscribeSession = null;
@@ -1588,8 +1421,16 @@ service cloud.firestore {
         this.playerCard = [];
         this.isBingoClaimed = false;
 
+        // SaaS Auth & Admin State
+        this.authMode = "login"; // 'login' | 'register' | 'reset'
+        this.currentMemberProfile = null;
+        this.allMembersCache = [];
+        this.allHistoryLogsCache = [];
+        this.lastUnverifiedUser = null;
+
         this.session = {
           roomCode: "8888",
+          roundId: "round_init_8888",
           title: "第 108 期：AI 主題知識專場",
           gameMode: "ai_theme",
           winningPattern: "single_line",
@@ -1642,6 +1483,14 @@ service cloud.firestore {
         const initialTab = (urlView === "player" || urlRoom) ? "player" : "stage";
         this.switchMainTab(initialTab);
         this.updateQrCodes();
+
+        // Set default dates for AI Admin Report
+        const today = new Date().toISOString().split("T")[0];
+        const lastMonth = new Date(Date.now() - 30 * 86400000).toISOString().split("T")[0];
+        const startEl = document.getElementById("reportStartDate");
+        const endEl = document.getElementById("reportEndDate");
+        if (startEl) startEl.value = lastMonth;
+        if (endEl) endEl.value = today;
 
         if (urlRoom) {
           this.showToast(`📱 掃碼成功！已自動進入房號 #${this.roomCode} 並領取您的專屬賓果盤！`, "emerald");
@@ -1740,16 +1589,18 @@ service cloud.firestore {
           const authMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
           const fsMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
 
+          this.authMod = authMod;
           this.fbOps = fsMod;
           const app = appMod.initializeApp(firebaseConfig, "vegas-bingo-" + Date.now());
           this.auth = authMod.getAuth(app);
           this.db = fsMod.getFirestore(app);
 
-          try {
-            await authMod.signInAnonymously(this.auth);
-          } catch (authErr) {
-            // Direct Firestore mode even if Anonymous Auth is not enabled in console
-          }
+          // Listen for SaaS Auth State
+          authMod.onAuthStateChanged(this.auth, async (user) => {
+            if (user && !user.isAnonymous) {
+              await this.handleAuthenticatedUser(user);
+            }
+          });
 
           this.subscribeToCloudRoom(this.roomCode);
           this.updateSyncBadge("雲端已連線: game09-bingogame", true);
@@ -1797,10 +1648,39 @@ service cloud.firestore {
 
         const playersColRef = collection(this.db, "bingo_rooms", `room_${roomCode}`, "players");
         this.unsubscribePlayers = onSnapshot(playersColRef, (snap) => {
+          const freshCloudMap = new Map();
+          // Always preserve local simulated bots for current round
+          for (const [id, p] of this.playersMap.entries()) {
+            if (p.isBot && (!p.roundId || p.roundId === this.session.roundId)) {
+              freshCloudMap.set(id, p);
+            }
+          }
+
           snap.forEach((docSnap) => {
             const p = docSnap.data();
-            this.playersMap.set(docSnap.id, p);
+            // Only include players belonging to the active roundId (or recently updated within 20 mins)
+            const isCurrentRound = !p.roundId || p.roundId === this.session.roundId;
+            const isRecent = !p.updatedAt || (Date.now() - p.updatedAt < 20 * 60 * 1000);
+            if (isCurrentRound && isRecent) {
+              freshCloudMap.set(docSnap.id, p);
+            }
           });
+
+          // Deduplicate same-name records (keep the most recently updated entry for each player name)
+          const byNameLatest = new Map();
+          for (const [id, p] of freshCloudMap.entries()) {
+            const key = (p.name || "").trim().toUpperCase();
+            const existing = byNameLatest.get(key);
+            if (!existing || (p.updatedAt || 0) >= (existing.p.updatedAt || 0) || id === this.playerId) {
+              byNameLatest.set(key, { id, p });
+            }
+          }
+
+          this.playersMap.clear();
+          for (const { id, p } of byNameLatest.values()) {
+            this.playersMap.set(id, p);
+          }
+
           this.renderStageLeaderboard();
           this.renderTopTicker();
         }, (err) => console.warn("Firestore players snapshot notice:", err));
@@ -1810,7 +1690,8 @@ service cloud.firestore {
 
       applyIncomingSession(incoming) {
         const modeChanged = incoming.gameMode !== this.session.gameMode || incoming.deckTitle !== this.session.deckTitle;
-        const wasReset = incoming.drawnBalls.length === 0 && this.session.drawnBalls.length > 0;
+        const roundChanged = incoming.roundId && incoming.roundId !== this.session.roundId;
+        const wasReset = (incoming.drawnBalls && incoming.drawnBalls.length === 0 && this.session.drawnBalls.length > 0) || roundChanged;
 
         this.session = incoming;
         if (modeChanged || wasReset) {
@@ -1835,6 +1716,7 @@ service cloud.firestore {
           const roomDocRef = doc(this.db, "bingo_rooms", `room_${this.roomCode}`);
           await setDoc(roomDocRef, {
             roomCode: this.session.roomCode,
+            roundId: this.session.roundId || "round_init_8888",
             title: this.session.title,
             gameMode: this.session.gameMode,
             winningPattern: this.session.winningPattern,
@@ -1854,6 +1736,7 @@ service cloud.firestore {
         const myRecord = {
           playerId: this.playerId,
           roomCode: this.roomCode,
+          roundId: this.session.roundId || "round_init_8888",
           name: this.playerName,
           markedCount: stats.markedCount,
           linesCount: stats.linesCount,
@@ -2433,13 +2316,15 @@ service cloud.firestore {
           this.playersMap.set(botId, {
             playerId: botId,
             roomCode: this.roomCode,
+            roundId: this.session.roundId || "round_init_8888",
             name,
             card,
             markedCount: stats.markedCount,
             linesCount: stats.linesCount,
             preBingoCount: stats.preBingoCount,
             isWinner: stats.isWinner,
-            isBot: true
+            isBot: true,
+            updatedAt: Date.now()
           });
         }
         this.renderStageLeaderboard();
@@ -2515,18 +2400,61 @@ service cloud.firestore {
 
       resetCurrentSession(silent = false) {
         this.stopAutoDraw();
+        this.session.roundId = "round_" + Date.now();
         this.session.drawnBalls = [];
         this.session.currentBall = null;
         this.session.winners = [];
         this.isBingoClaimed = false;
+        this.playersMap.clear();
         this.generateMyCard();
-        for (const [id, p] of this.playersMap.entries()) {
-          if (p.isBot) this.playersMap.delete(id);
-        }
         this.spawnSimulatedPlayers(3, true);
         this.pushSessionToCloud();
         this.renderAll();
-        if (!silent) this.showToast("🔄 已重置本局球池並重新發放全場賓果盤！", "amber");
+        if (!silent) this.showToast("🔄 已重置本局球池、清空舊局榜單並重新發放全場賓果盤！", "amber");
+      }
+
+      switchMainTab(tabName) {
+        this.activeTab = tabName;
+        ["lobby", "stage", "player", "host"].forEach(t => {
+          const viewEl = document.getElementById(`view-${t}`);
+          if (viewEl) viewEl.classList.toggle("hidden", t !== tabName);
+
+          const btnEl = document.getElementById(`tabBtn-${t}`);
+          if (btnEl) {
+            if (t === tabName) {
+              btnEl.className = "nav-tab-btn flex-1 xl:flex-initial px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-md";
+            } else {
+              btnEl.className = "nav-tab-btn flex-1 xl:flex-initial px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 text-slate-300 hover:text-white";
+            }
+          }
+        });
+        this.renderAll();
+      }
+
+      updatePlayerName(newName) {
+        const cleaned = (newName || "").trim();
+        if (!cleaned) return;
+        this.playerName = cleaned.slice(0, 16);
+        const lobbyIn = document.getElementById("lobbyPlayerNameInput");
+        const playerIn = document.getElementById("playerViewNameInput");
+        if (lobbyIn) lobbyIn.value = this.playerName;
+        if (playerIn) playerIn.value = this.playerName;
+        this.pushMyPlayerStateToCloud();
+        this.renderStageLeaderboard();
+        this.showToast(`👤 玩家暱稱已更新為：${this.playerName}`, "emerald");
+      }
+
+      joinRoomByInput() {
+        const input = document.getElementById("joinRoomCodeInput");
+        const code = (input ? input.value : "8888").trim().toUpperCase() || "8888";
+        this.roomCode = code;
+        this.session.roomCode = code;
+        document.getElementById("headerRoomBadge").textContent = `ROOM #${code}`;
+        this.generateMyCard();
+        this.subscribeToCloudRoom(code);
+        this.updateQrCodes();
+        this.switchMainTab("player");
+        this.showToast(`🚪 已進入包廂 ROOM #${code} 並領取新卡！`, "amber");
       }
 
       QuickSwitchPresetRoom(roomCode, gameMode, title) {
@@ -2535,91 +2463,173 @@ service cloud.firestore {
         this.session.roomCode = roomCode;
         this.session.gameMode = gameMode;
         this.session.title = title;
-        document.getElementById("joinRoomCodeInput").value = roomCode;
-        this.resetCurrentSession(true);
-        if (this.db) this.subscribeToCloudRoom(roomCode);
+        this.session.roundId = "round_" + Date.now();
+        this.session.drawnBalls = [];
+        this.session.currentBall = null;
+        this.session.winners = [];
+        const joinInput = document.getElementById("joinRoomCodeInput");
+        if (joinInput) joinInput.value = roomCode;
+        document.getElementById("headerRoomBadge").textContent = `ROOM #${roomCode}`;
+        this.playersMap.clear();
+        this.generateMyCard();
+        this.spawnSimulatedPlayers(3, true);
+        this.subscribeToCloudRoom(roomCode);
+        this.pushSessionToCloud();
         this.updateQrCodes();
         this.switchMainTab("player");
-        this.showToast(`🚪 已進入房號 #${roomCode}【${title}】！`, "amber");
-      }
-
-      joinRoomByInput() {
-        const val = document.getElementById("joinRoomCodeInput").value.trim().toUpperCase() || "8888";
-        this.roomCode = val;
-        this.session.roomCode = val;
-        this.session.title = `連線包廂專場 (#${val})`;
-        this.resetCurrentSession(true);
-        if (this.db) this.subscribeToCloudRoom(val);
-        this.updateQrCodes();
-        this.switchMainTab("player");
-        this.showToast(`🚪 已連線進入房號 #${val}！`, "emerald");
-      }
-
-      updatePlayerName(newName) {
-        const clean = (newName || "").trim();
-        if (!clean) return;
-        this.playerName = clean;
-        document.getElementById("lobbyPlayerNameInput").value = clean;
-        document.getElementById("playerViewNameInput").value = clean;
-        this.pushMyPlayerStateToCloud();
-        this.renderStageLeaderboard();
-        this.showToast(`👤 暱稱已更新為：${clean}`, "emerald");
-      }
-
-      toggleStageAnswerVisibility() {
-        this.session.revealStageAnswer = !this.session.revealStageAnswer;
-        this.renderStageView();
+        this.showToast(`🎰 已切換至 #${roomCode}【${title}】！`, "amber");
       }
 
       toggleVoice() {
         this.sound.voiceEnabled = !this.sound.voiceEnabled;
-        document.getElementById("voiceIcon").className = this.sound.voiceEnabled ? "fa-solid fa-volume-high text-amber-400" : "fa-solid fa-volume-xmark text-slate-500";
-        document.getElementById("voiceLabel").textContent = this.sound.voiceEnabled ? "語音開" : "靜音";
+        const icon = document.getElementById("voiceIcon");
+        const label = document.getElementById("voiceLabel");
+        if (this.sound.voiceEnabled) {
+          icon.className = "fa-solid fa-volume-high";
+          label.textContent = "語音開";
+          this.showToast("🔊 已開啟 AI 語音唱號播報", "emerald");
+        } else {
+          if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+          icon.className = "fa-solid fa-volume-xmark text-slate-400";
+          label.textContent = "靜音";
+          this.showToast("🔇 已關閉語音播報", "slate");
+        }
       }
 
-      switchMainTab(tabName) {
-        this.activeTab = tabName;
-        ["lobby", "stage", "player", "host"].forEach(t => {
-          const sec = document.getElementById(`view-${t}`);
-          const btn = document.getElementById(`tabBtn-${t}`);
-          if (sec) sec.classList.toggle("hidden", t !== tabName);
-          if (btn) {
-            btn.className = t === tabName
-              ? "nav-tab-btn flex-1 xl:flex-initial px-3 py-1.5 rounded-lg text-xs sm:text-sm font-black transition flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 shadow-md"
-              : "nav-tab-btn flex-1 xl:flex-initial px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 text-slate-300 hover:text-white";
+      toggleStageAnswerVisibility() {
+        this.session.revealStageAnswer = !this.session.revealStageAnswer;
+        this.pushSessionToCloud();
+        this.renderStageView();
+      }
+
+      renderTopTicker() {
+        const playersArr = Array.from(this.playersMap.values());
+        const preCount = playersArr.filter(p => !p.isWinner && p.preBingoCount > 0).length;
+        const onlineEl = document.getElementById("topOnlineCount");
+        const drawnEl = document.getElementById("topDrawnCount");
+        const preEl = document.getElementById("topPreBingoCount");
+        const tickerEl = document.getElementById("tensionTickerText");
+
+        if (onlineEl) onlineEl.textContent = playersArr.length;
+        if (drawnEl) drawnEl.textContent = this.session.drawnBalls.length;
+        if (preEl) preEl.textContent = preCount;
+
+        if (tickerEl) {
+          if (this.session.winners && this.session.winners.length > 0) {
+            const latestWinner = this.session.winners[0];
+            tickerEl.innerHTML = `🎉 賀！玩家 <strong class="text-amber-300">${latestWinner.name}</strong> 已達成【${latestWinner.pattern}】BINGO 連線奪冠！`;
+          } else if (preCount > 0) {
+            const names = playersArr.filter(p => !p.isWinner && p.preBingoCount > 0).slice(0, 3).map(p => p.name).join("、");
+            tickerEl.innerHTML = `🚨 現場緊張萬分！<strong class="text-amber-300">${names}</strong> 等 ${preCount} 位學員已經進入「差 1 格聽牌」狀態！`;
+          } else if (this.session.currentBall) {
+            tickerEl.textContent = `最新開出：${this.session.currentBall.column} 欄考題！請核對手中賓果盤蓋章！`;
+          } else {
+            tickerEl.textContent = `歡迎光臨拉斯維加斯 & 樂透 AI 賓果大廳！學員可掃描右上角 QR Code 手機領牌連線！`;
           }
-        });
-        this.renderAll();
+        }
       }
 
       renderAll() {
-        document.getElementById("headerRoomBadge").textContent = `ROOM #${this.roomCode}`;
+        const badge = document.getElementById("headerRoomBadge");
+        if (badge) badge.textContent = `ROOM #${this.roomCode}`;
         this.renderTopTicker();
         this.renderStageView();
         this.renderPlayerView();
         this.renderHostView();
       }
 
-      renderTopTicker() {
-        const onlineCount = this.playersMap.size;
-        const drawnCount = this.session.drawnBalls.length;
-        const preBingoPlayers = [];
-        this.playersMap.forEach(p => {
-          if (p.preBingoCount > 0) preBingoPlayers.push(p.name);
+      switchStageBoardTab(tab) {
+        this.stageBoardTab = tab;
+        const alertBtn = document.getElementById("stageBoardTab-alerts");
+        const rankBtn = document.getElementById("stageBoardTab-ranking");
+        const radarEl = document.getElementById("stagePreBingoRadarList");
+        const rankEl = document.getElementById("stageLiveRankingList");
+
+        if (alertBtn && rankBtn) {
+          alertBtn.className = tab === "alerts"
+            ? "px-2.5 py-1 rounded-lg text-xs font-black transition flex items-center gap-1.5 bg-rose-600 text-white shadow"
+            : "px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-white";
+          rankBtn.className = tab === "ranking"
+            ? "px-2.5 py-1 rounded-lg text-xs font-black transition flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow"
+            : "px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-white";
+        }
+        if (radarEl) radarEl.classList.toggle("hidden", tab !== "alerts");
+        if (rankEl) rankEl.classList.toggle("hidden", tab !== "ranking");
+      }
+
+      async clearStaleRoomPlayers() {
+        for (const [id, p] of this.playersMap.entries()) {
+          if (id !== this.playerId && !p.isBot) {
+            this.playersMap.delete(id);
+          }
+        }
+        this.renderStageLeaderboard();
+        this.showToast("🧹 已清理舊局或重複的殘留名單！", "emerald");
+      }
+
+      renderStageLeaderboard() {
+        const playersArr = Array.from(this.playersMap.values());
+        // 1. 聽牌警報雷達：只篩選「尚未 BINGO 但處於差 1 格聽牌 (preBingoCount > 0)」的玩家，不顯示名次編號避免誤認為排行榜
+        const preBingoList = playersArr
+          .filter(p => !p.isWinner && p.preBingoCount > 0)
+          .sort((a, b) => b.preBingoCount - a.preBingoCount || b.markedCount - a.markedCount);
+
+        const preBadge = document.getElementById("stagePreBingoBadge");
+        if (preBadge) preBadge.textContent = `${preBingoList.length}人`;
+
+        const totalBadge = document.getElementById("stageTotalPlayersBadge");
+        if (totalBadge) totalBadge.textContent = `${playersArr.length}人`;
+
+        const radarEl = document.getElementById("stagePreBingoRadarList");
+        if (radarEl) {
+          if (preBingoList.length === 0) {
+            radarEl.innerHTML = `
+              <div class="py-6 text-center text-slate-400 bg-slate-950/60 rounded-xl border border-slate-800/80 space-y-1">
+                <div class="text-amber-400 font-bold"><i class="fa-solid fa-satellite-dish mr-1"></i>聽牌雷達掃描中...目前尚無人聽牌</div>
+                <div class="text-[11px] text-slate-500">當學員差 1 格即將連線時，會立即跳出紅色聽牌警報！（欲看全場名次請點上方「🏆 當場即時排行榜」）</div>
+              </div>
+            `;
+          } else {
+            radarEl.innerHTML = preBingoList.map((p) => `
+              <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-rose-950/60 border border-rose-500/50 shadow-sm">
+                <div class="flex items-center gap-2 truncate">
+                  <span class="px-2 py-0.5 rounded bg-rose-600 text-white font-black text-[10px] animate-pulse">🚨 差 1 格連線</span>
+                  <span class="font-black ${p.playerId === this.playerId ? 'text-amber-300' : 'text-white'} truncate">${p.name}</span>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="text-[11px] text-rose-200">已中 ${p.markedCount} 格</span>
+                  <span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[11px]">🔥 聽 ${p.preBingoCount} 條線</span>
+                </div>
+              </div>
+            `).join("");
+          }
+        }
+
+        // 2. 當場即時排行榜：依據 BINGO 完賽 > 已達成連線數 > 聽牌線數 > 命中格數 進行當場真實排名
+        const sortedRanking = [...playersArr].sort((a, b) => {
+          if (a.isWinner !== b.isWinner) return a.isWinner ? -1 : 1;
+          if (b.linesCount !== a.linesCount) return b.linesCount - a.linesCount;
+          if (b.preBingoCount !== a.preBingoCount) return b.preBingoCount - a.preBingoCount;
+          return b.markedCount - a.markedCount;
         });
 
-        document.getElementById("topOnlineCount").textContent = onlineCount;
-        document.getElementById("topDrawnCount").textContent = drawnCount;
-        document.getElementById("topPreBingoCount").textContent = preBingoPlayers.length;
-
-        const tickerEl = document.getElementById("tensionTickerText");
-        if (this.session.winners.length > 0) {
-          const w = this.session.winners[0];
-          tickerEl.innerHTML = `🏆 <strong>狂賀 BINGO 誕生！</strong> 玩家 <span class="text-amber-300 font-black">${w.name}</span> 達成【${w.pattern}】連線奪冠！`;
-        } else if (preBingoPlayers.length > 0) {
-          tickerEl.innerHTML = `🔥 <strong>彩券行聽牌警報！</strong> 目前 <span class="text-amber-300 font-black">${preBingoPlayers.slice(0, 4).join("、")}</span> 等 ${preBingoPlayers.length} 人只差 1 格就 BINGO！`;
-        } else if (this.session.currentBall) {
-          tickerEl.innerHTML = `🎰 最新搖出：<strong class="text-amber-300">${this.session.currentBall.column} 欄 (${this.session.currentBall.id})</strong>，快在手牌找出答案蓋章！`;
+        const rankEl = document.getElementById("stageLiveRankingList");
+        if (rankEl) {
+          rankEl.innerHTML = sortedRanking.map((p, idx) => `
+            <div class="flex items-center justify-between px-3 py-1.5 rounded-lg ${p.isWinner ? 'bg-amber-500/20 border border-amber-400/50' : 'bg-slate-950/80 border border-slate-800'}">
+              <div class="flex items-center gap-2 truncate">
+                <span class="w-6 text-center font-mono font-black ${idx === 0 ? 'text-amber-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-amber-600' : 'text-slate-500'}">NO.${idx + 1}</span>
+                <span class="font-bold ${p.playerId === this.playerId ? 'text-amber-300' : 'text-white'} truncate">${p.name}</span>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="text-[11px] text-slate-400">命中 ${p.markedCount} 格</span>
+                ${p.isWinner
+                  ? `<span class="px-2 py-0.5 rounded bg-amber-400 text-slate-950 font-black text-[10px]">🏆 BINGO 奪冠</span>`
+                  : `<span class="px-2 py-0.5 rounded bg-slate-800 text-emerald-400 font-bold text-[10px]">連線 ${p.linesCount} 條 / 聽 ${p.preBingoCount} 線</span>`
+                }
+              </div>
+            </div>
+          `).join("");
         }
       }
 
@@ -2687,37 +2697,6 @@ service cloud.firestore {
         }).join("");
 
         this.renderStageLeaderboard();
-      }
-
-      renderStageLeaderboard() {
-        const playersArr = Array.from(this.playersMap.values());
-        const preBingoList = playersArr.filter(p => p.preBingoCount > 0);
-        document.getElementById("stagePreBingoBadge").textContent = `${preBingoList.length} 人聽牌`;
-
-        const sorted = [...playersArr].sort((a, b) => {
-          if (a.isWinner !== b.isWinner) return a.isWinner ? -1 : 1;
-          if (b.preBingoCount !== a.preBingoCount) return b.preBingoCount - a.preBingoCount;
-          return b.markedCount - a.markedCount;
-        });
-
-        const winEl = document.getElementById("stageWinnersList");
-        winEl.innerHTML = sorted.map((p, idx) => `
-          <div class="flex items-center justify-between px-3 py-1.5 rounded-lg ${p.isWinner ? 'bg-amber-500/20 border border-amber-400/50' : (p.preBingoCount > 0 ? 'bg-rose-950/50 border border-rose-500/40' : 'bg-slate-950/70 border border-slate-800')}">
-            <div class="flex items-center gap-2 truncate">
-              <span class="font-mono font-bold text-slate-400">#${idx + 1}</span>
-              <span class="font-bold ${p.playerId === this.playerId ? 'text-amber-300' : 'text-white'} truncate">${p.name}</span>
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-              <span class="text-[11px] text-slate-400">命中 ${p.markedCount} 格</span>
-              ${p.isWinner
-                ? `<span class="px-2 py-0.5 rounded bg-amber-400 text-slate-950 font-black text-[10px]">🏆 BINGO!</span>`
-                : p.preBingoCount > 0
-                  ? `<span class="px-2 py-0.5 rounded bg-rose-600 text-white font-black text-[10px] animate-pulse">🔥 聽 ${p.preBingoCount} 線</span>`
-                  : `<span class="px-2 py-0.5 rounded bg-slate-800 text-emerald-400 font-bold text-[10px]">${p.linesCount} 線</span>`
-              }
-            </div>
-          </div>
-        `).join("");
       }
 
       renderPlayerView() {
@@ -2907,6 +2886,417 @@ service cloud.firestore {
         document.getElementById("bingoWinnerModal").classList.add("hidden");
       }
 
+      openCreatorModal() {
+        document.getElementById("creatorBioModal").classList.remove("hidden");
+      }
+      closeCreatorModal() {
+        document.getElementById("creatorBioModal").classList.add("hidden");
+      }
+
+      switchAuthMode(mode) {
+        this.authMode = mode;
+        ["login", "register", "reset"].forEach(m => {
+          const tab = document.getElementById(`authTab-${m}`);
+          if (tab) {
+            tab.className = m === mode
+              ? "flex-1 py-2 rounded-lg text-xs sm:text-sm font-black bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 shadow transition"
+              : "flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white transition";
+          }
+        });
+        document.getElementById("registerExtraFields").classList.toggle("hidden", mode !== "register");
+        document.getElementById("authPasswordFieldGroup").classList.toggle("hidden", mode === "reset");
+        document.getElementById("spamFolderReminder").classList.toggle("hidden", mode === "login");
+        document.getElementById("authAlertBox").classList.add("hidden");
+        document.getElementById("resendVerifyBtn").classList.add("hidden");
+
+        const btn = document.getElementById("authPrimarySubmitBtn");
+        btn.textContent = mode === "login" ? "立即登入平台" : (mode === "register" ? "註冊並發送驗證信" : "發送密碼重設信");
+      }
+
+      togglePasswordEye() {
+        const input = document.getElementById("authPasswordInput");
+        const icon = document.getElementById("passwordEyeIcon");
+        if (input.type === "password") {
+          input.type = "text";
+          icon.className = "fa-solid fa-eye-slash text-amber-400";
+        } else {
+          input.type = "password";
+          icon.className = "fa-solid fa-eye";
+        }
+      }
+
+      showAuthBanner(msg, type = "green") {
+        const box = document.getElementById("authAlertBox");
+        box.classList.remove("hidden");
+        if (type === "green") {
+          box.className = "p-3.5 rounded-xl border border-emerald-500/60 bg-emerald-950/80 text-emerald-300 text-xs sm:text-sm font-bold leading-relaxed";
+        } else {
+          box.className = "p-3.5 rounded-xl border border-rose-500/60 bg-rose-950/80 text-rose-300 text-xs sm:text-sm font-bold leading-relaxed";
+        }
+        box.innerHTML = msg;
+      }
+
+      async handleAuthSubmit() {
+        if (!this.authMod || !this.auth) {
+          this.showAuthBanner("Firebase 認證模組初始化中，請稍候再試。", "red");
+          return;
+        }
+        const email = document.getElementById("authEmailInput").value.trim();
+        const password = document.getElementById("authPasswordInput").value;
+        const realName = document.getElementById("authRealNameInput").value.trim();
+        const identityEl = document.querySelector('input[name="memberIdentity"]:checked');
+        const identity = identityEl ? identityEl.value : "TONY老師學員";
+
+        if (!email) {
+          this.showAuthBanner("⚠️ 請輸入電子郵件信箱 (Email)！", "red");
+          return;
+        }
+
+        const {
+          createUserWithEmailAndPassword,
+          signInWithEmailAndPassword,
+          sendEmailVerification,
+          sendPasswordResetEmail,
+          signOut
+        } = this.authMod;
+
+        try {
+          if (this.authMode === "reset") {
+            await sendPasswordResetEmail(this.auth, email);
+            this.showAuthBanner("✅ 密碼重設信已寄出！請至信箱點擊連結（若未看到請檢查垃圾郵件匣）。", "green");
+            return;
+          }
+
+          if (this.authMode === "register") {
+            if (!realName) {
+              this.showAuthBanner("⚠️ 請輸入您的真實姓名！", "red");
+              return;
+            }
+            if (!password || password.length < 6) {
+              this.showAuthBanner("⚠️ 密碼長度請至少設定 6 位字元！", "red");
+              return;
+            }
+            const cred = await createUserWithEmailAndPassword(this.auth, email, password);
+            await this.upsertMemberProfile(cred.user, { realName, identity, isNewRegister: true });
+            await sendEmailVerification(cred.user);
+            await signOut(this.auth);
+            this.switchAuthMode("login");
+            document.getElementById("spamFolderReminder").classList.remove("hidden");
+            this.showAuthBanner("✅ 註冊成功！請至信箱點擊驗證信完成啟用（驗證後即可登入）。", "green");
+            return;
+          }
+
+          // Login Mode
+          const cred = await signInWithEmailAndPassword(this.auth, email, password);
+          const isSuperAdmin = email.toLowerCase() === "mindnodeai@gmail.com";
+          if (!cred.user.emailVerified && !isSuperAdmin) {
+            this.lastUnverifiedUser = cred.user;
+            await signOut(this.auth);
+            document.getElementById("resendVerifyBtn").classList.remove("hidden");
+            document.getElementById("spamFolderReminder").classList.remove("hidden");
+            this.showAuthBanner("⛔ 您的信箱尚未完成驗證！請先至信箱點擊驗證連結後再登入（記得檢查垃圾郵件匣）。", "red");
+            return;
+          }
+
+          await this.handleAuthenticatedUser(cred.user);
+        } catch (err) {
+          this.showAuthBanner(`⚠️ 驗證失敗：${err.message}`, "red");
+        }
+      }
+
+      async resendVerificationEmail() {
+        if (!this.lastUnverifiedUser || !this.authMod) return;
+        try {
+          await this.authMod.sendEmailVerification(this.lastUnverifiedUser);
+          this.showAuthBanner("📨 已重新發送驗證信至您的信箱，請前往查收！", "green");
+        } catch (e) {
+          this.showAuthBanner("⚠️ 發送過於頻繁，請稍候再試。", "red");
+        }
+      }
+
+      async loginWithGoogle() {
+        if (!this.authMod || !this.auth) return;
+        try {
+          const provider = new this.authMod.GoogleAuthProvider();
+          const cred = await this.authMod.signInWithPopup(this.auth, provider);
+          await this.handleAuthenticatedUser(cred.user);
+        } catch (err) {
+          this.showAuthBanner(`⚠️ Google 登入未完成：${err.message}`, "red");
+        }
+      }
+
+      async upsertMemberProfile(user, extra = {}) {
+        if (!this.db || !this.fbOps) return null;
+        const { doc, getDoc, setDoc, collection, addDoc } = this.fbOps;
+        const email = (user.email || "").toLowerCase();
+        const isCreator = email === "mindnodeai@gmail.com";
+        const memberRef = doc(this.db, "bingo_rooms", "saas_directory", "players", user.uid);
+
+        let existing = null;
+        try {
+          const snap = await getDoc(memberRef);
+          if (snap.exists()) existing = snap.data();
+        } catch (e) {}
+
+        const nowIso = new Date().toISOString();
+        const profile = {
+          uid: user.uid,
+          email: user.email || "",
+          realName: extra.realName || (existing && existing.realName) || user.displayName || email.split("@")[0] || "貴賓學員",
+          identity: extra.identity || (existing && existing.identity) || (isCreator ? "系統創作者" : "TONY老師學員"),
+          role: isCreator ? "admin" : ((existing && existing.role) || "user"),
+          isCreator: isCreator,
+          createdAt: (existing && existing.createdAt) || nowIso,
+          lastLoginAt: nowIso,
+          loginCount: ((existing && existing.loginCount) || 0) + (extra.isNewRegister ? 0 : 1)
+        };
+
+        try {
+          await setDoc(memberRef, profile);
+          const logsCol = collection(this.db, "bingo_rooms", "saas_history", "players");
+          await addDoc(logsCol, {
+            uid: profile.uid,
+            email: profile.email,
+            realName: profile.realName,
+            action: extra.isNewRegister ? "註冊會員並發送驗證信" : "成功登入系統",
+            timestamp: nowIso
+          });
+        } catch (e) {}
+
+        return profile;
+      }
+
+      async handleAuthenticatedUser(user) {
+        const isCreator = (user.email || "").toLowerCase() === "mindnodeai@gmail.com";
+        const providerId = (user.providerData && user.providerData[0]) ? user.providerData[0].providerId : "";
+        if (!user.emailVerified && !isCreator && providerId === "password") {
+          return;
+        }
+        const profile = await this.upsertMemberProfile(user);
+        this.currentMemberProfile = profile;
+
+        if (profile && profile.realName) {
+          this.playerId = "u_" + user.uid.slice(0, 10);
+          this.updatePlayerName(profile.realName);
+        }
+
+        document.getElementById("saasAuthGate").classList.add("hidden");
+        document.getElementById("headerMemberName").textContent = `${(profile && profile.realName) ? profile.realName : "會員"} (登出)`;
+
+        const adminBtn = document.getElementById("adminDashboardBtn");
+        if (adminBtn) {
+          adminBtn.classList.toggle("hidden", !(profile && (profile.role === "admin" || profile.isCreator)));
+        }
+        this.showToast(`🎉 歡迎回來，${(profile && profile.realName) ? profile.realName : user.email}！`, "emerald");
+      }
+
+      async logoutSaas() {
+        if (this.authMod && this.auth) {
+          await this.authMod.signOut(this.auth);
+        }
+        this.currentMemberProfile = null;
+        document.getElementById("saasAuthGate").classList.remove("hidden");
+        document.getElementById("adminDashboardBtn").classList.add("hidden");
+      }
+
+      async openAdminModal() {
+        document.getElementById("adminDashboardModal").classList.remove("hidden");
+        await this.loadAdminMembers();
+      }
+
+      closeAdminModal() {
+        document.getElementById("adminDashboardModal").classList.add("hidden");
+      }
+
+      async loadAdminMembers() {
+        if (!this.db || !this.fbOps) return;
+        const { collection, getDocs } = this.fbOps;
+        try {
+          const snap = await getDocs(collection(this.db, "bingo_rooms", "saas_directory", "players"));
+          const list = [];
+          snap.forEach(d => list.push(d.data()));
+          this.allMembersCache = list.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+          document.getElementById("adminMemberCount").textContent = this.allMembersCache.length;
+
+          const tbody = document.getElementById("adminMembersTableBody");
+          tbody.innerHTML = this.allMembersCache.map(m => {
+            const isCreator = m.email?.toLowerCase() === "mindnodeai@gmail.com" || m.isCreator;
+            return `
+              <tr class="hover:bg-slate-900/80">
+                <td class="py-2.5 px-2">
+                  <div class="font-bold text-white">${m.realName || "-"}</div>
+                  <div class="text-[10px] text-amber-300">${m.identity || "一般訪客"}</div>
+                </td>
+                <td class="py-2.5 px-2 font-mono text-slate-300">${m.email}</td>
+                <td class="py-2.5 px-2 font-mono text-slate-400">${(m.createdAt || "").slice(0, 16).replace("T", " ")}</td>
+                <td class="py-2.5 px-2 font-mono font-bold text-emerald-400">${m.loginCount || 1} 次</td>
+                <td class="py-2.5 px-2">
+                  ${isCreator
+                    ? `<span class="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-[10px]">👑 系統創作者 (Admin)</span>`
+                    : m.role === "admin"
+                      ? `<span class="px-2 py-0.5 rounded bg-rose-500/20 border border-rose-500/40 text-rose-300 font-bold text-[10px]">管理員 (Admin)</span>`
+                      : `<span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">一般會員 (User)</span>`
+                  }
+                </td>
+                <td class="py-2.5 px-2 text-right space-x-1">
+                  <button onclick="window.app.filterMemberHistory('${m.email}')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-sky-300 text-[10px] font-bold">紀錄</button>
+                  ${isCreator
+                    ? `<span class="text-[10px] text-slate-500 italic">最高權限鎖定</span>`
+                    : `
+                      <button onclick="window.app.toggleMemberRole('${m.uid}', '${m.role}')" class="px-2 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-[10px] font-bold">
+                        ${m.role === "admin" ? "降為 User" : "升為 Admin"}
+                      </button>
+                      <button onclick="window.app.deleteMemberRecord('${m.uid}')" class="px-2 py-1 rounded bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 text-[10px] font-bold">刪除</button>
+                    `
+                  }
+                </td>
+              </tr>
+            `;
+          }).join("");
+
+          const logSnap = await getDocs(collection(this.db, "bingo_rooms", "saas_history", "players"));
+          const logs = [];
+          logSnap.forEach(d => logs.push(d.data()));
+          this.allHistoryLogsCache = logs.sort((a, b) => (b.timestamp || "").localeCompare(a.timestamp || ""));
+          this.renderHistoryLogs(this.allHistoryLogsCache);
+        } catch (e) {}
+      }
+
+      renderHistoryLogs(logs) {
+        const box = document.getElementById("adminHistoryLogsBox");
+        if (!box) return;
+        box.innerHTML = logs.slice(0, 60).map(l => `
+          <div class="py-1.5 flex items-center justify-between">
+            <div>
+              <span class="font-bold text-amber-300">${l.realName || l.email}</span>
+              <span class="text-slate-400 ml-1">(${l.email})</span>
+              <span class="ml-2 text-white">${l.action}</span>
+            </div>
+            <span class="font-mono text-[10px] text-slate-500">${(l.timestamp || "").slice(0, 19).replace("T", " ")}</span>
+          </div>
+        `).join("");
+      }
+
+      filterMemberHistory(email) {
+        document.getElementById("adminHistoryFilterLabel").textContent = `篩選會員：${email}`;
+        this.renderHistoryLogs(this.allHistoryLogsCache.filter(l => l.email === email));
+      }
+
+      async toggleMemberRole(uid, currentRole) {
+        if (!this.db || !this.fbOps) return;
+        const target = this.allMembersCache.find(m => m.uid === uid);
+        if (target && (target.email?.toLowerCase() === "mindnodeai@gmail.com" || target.isCreator)) {
+          this.showToast("⛔ 系統創作者最高權限不可降維！", "rose");
+          return;
+        }
+        const newRole = currentRole === "admin" ? "user" : "admin";
+        const { doc, setDoc } = this.fbOps;
+        await setDoc(doc(this.db, "bingo_rooms", "saas_directory", "players", uid), { ...target, role: newRole });
+        this.showToast(`✅ 已將 ${target?.realName} 權限更新為 ${newRole.toUpperCase()}`, "emerald");
+        await this.loadAdminMembers();
+      }
+
+      async deleteMemberRecord(uid) {
+        const target = this.allMembersCache.find(m => m.uid === uid);
+        if (target && (target.email?.toLowerCase() === "mindnodeai@gmail.com" || target.isCreator)) {
+          this.showToast("⛔ 系統創作者帳號受保護不可刪除！", "rose");
+          return;
+        }
+        const { doc, deleteDoc } = this.fbOps;
+        await deleteDoc(doc(this.db, "bingo_rooms", "saas_directory", "players", uid));
+        this.showToast(`🗑️ 已刪除會員 ${target?.realName || uid}`, "amber");
+        await this.loadAdminMembers();
+      }
+
+      exportMembersCsv() {
+        const headers = ["真實姓名", "電子信箱", "身份類別", "權限角色", "登入次數", "註冊時間", "最後登入時間"];
+        const rows = this.allMembersCache.map(m => [
+          `"${(m.realName || "").replace(/"/g, '""')}"`,
+          `"${(m.email || "").replace(/"/g, '""')}"`,
+          `"${(m.identity || "").replace(/"/g, '""')}"`,
+          `"${m.isCreator ? "系統創作者(Admin)" : (m.role || "user")}"`,
+          m.loginCount || 1,
+          `"${m.createdAt || ""}"`,
+          `"${m.lastLoginAt || ""}"`
+        ]);
+        const csvContent = "\ufeff" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `TONY_STUDIO_會員名單_${new Date().toISOString().slice(0,10)}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+        this.showToast("📊 已匯出繁體中文無亂碼 CSV 會員報表！", "emerald");
+      }
+
+      async generateAiAdminReport() {
+        const start = document.getElementById("reportStartDate").value;
+        const end = document.getElementById("reportEndDate").value;
+        const previewEl = document.getElementById("aiAdminReportPreview");
+
+        const filtered = this.allMembersCache.filter(m => {
+          const d = (m.createdAt || "").slice(0, 10);
+          return (!start || d >= start) && (!end || d <= end);
+        });
+        const studentsCount = filtered.filter(m => (m.identity || "").includes("學員") && !(m.identity || "").includes("非學員")).length;
+        const guestsCount = filtered.length - studentsCount;
+        const totalLogins = filtered.reduce((acc, m) => acc + (m.loginCount || 1), 0);
+
+        previewEl.textContent = "⏳ Gemini 3.8 正在分析會員數據並撰寫顧問報告...";
+
+        const defaultReport = `【TONY STUDIO 拉斯維加斯 AI 賓果平台 - 營運分析報告】
+■ 分析區間：${start} 至 ${end}
+■ 區間活躍會員總數：${filtered.length} 人
+■ 身份結構分析：
+  - TONY老師學員：${studentsCount} 人 (${filtered.length ? Math.round(studentsCount/filtered.length*100) : 0}%)
+  - 非學員(一般訪客)：${guestsCount} 人 (${filtered.length ? Math.round(guestsCount/filtered.length*100) : 0}%)
+■ 累計互動登入總次數：${totalLogins} 次
+
+【AI 顧問營運洞察與建議】
+1. 課堂黏著度表現優異：學員透過掃碼領取知識賓果盤的互動率高，建議於每堂課結尾開啟「AI 主題知識專場」進行 5 分鐘重點複習。
+2. 潛在學員轉化機會：一般訪客（非學員）參與熱絡，可透過匯出之 CSV 名單寄送進階 AI 行銷實戰課程資訊，創造二次轉化！`;
+
+        if (!this.geminiApiKey) {
+          previewEl.textContent = defaultReport;
+          return;
+        }
+
+        try {
+          const sys = "你是 TONY 楊文澤老師的專屬 AI 商業數據分析顧問，請撰寫結構清晰、專業具洞察力的繁體中文營運分析報告。";
+          const prompt = `分析區間：${start} ~ ${end}。總會員數：${filtered.length}人（TONY老師學員 ${studentsCount}人、一般訪客 ${guestsCount}人），累計登入 ${totalLogins} 次。請產出包含「數據摘要」、「學員與訪客結構分析」與「教學及商業轉化行動建議」的分析報告。`;
+          const aiText = await this.callGeminiAPI(prompt, sys);
+          previewEl.textContent = aiText.trim();
+        } catch (e) {
+          previewEl.textContent = defaultReport;
+        }
+      }
+
+      exportAiReportToWord() {
+        const reportText = document.getElementById("aiAdminReportPreview").textContent;
+        const start = document.getElementById("reportStartDate").value;
+        const end = document.getElementById("reportEndDate").value;
+        const wordHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='utf-8'><title>AI營運分析報告</title></head>
+<body style="font-family:'Microsoft JhengHei',sans-serif; padding:24px; line-height:1.6;">
+  <h1 style="color:#b45309;">TONY STUDIO 拉斯維加斯 AI 賓果平台 - AI 營運分析報告</h1>
+  <p><strong>報告區間：</strong>${start} 至 ${end} ｜ <strong>設計顧問：</strong>TONY 楊文澤 老師</p>
+  <hr/>
+  <pre style="font-family:'Microsoft JhengHei',sans-serif; white-space:pre-wrap; font-size:12pt;">${reportText}</pre>
+  <hr/>
+  <p style="font-size:10pt; color:#666;">© 2020 TonyStudio. 本學習平台由 TONY 楊文澤資深AI科技顧問設計. All Rights Reserved.</p>
+</body></html>`;
+
+        const blob = new Blob(["\ufeff", wordHtml], { type: "application/msword;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `TONY_STUDIO_AI營運分析報告_${start}_${end}.doc`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.showToast("📄 已成功匯出 Word (.doc) 營運分析報告！", "emerald");
+      }
+
       showToast(message, color = "amber") {
         const container = document.getElementById("toastContainer");
         if (!container) return;
@@ -2927,799 +3317,8 @@ service cloud.firestore {
       }
     }
 
-    const CREATOR_ADMIN_EMAIL = "mindnodeai@gmail.com";
-
-    class SaasMembershipManager {
-      constructor() {
-        this.auth = null;
-        this.db = null;
-        this.authMod = null;
-        this.fsMod = null;
-        this.currentUser = null;
-        this.currentProfile = null;
-        this.membersList = [];
-        this.historyLogs = [];
-        this.historyFilterEmail = null;
-        this.lastGeneratedReportHtml = "";
-        this.isRegisteringFlow = false;
-
-        this.initDefaultDates();
-        this.initSaasFirebase();
-      }
-
-      initDefaultDates() {
-        const today = new Date();
-        const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000);
-        const fmt = (d) => d.toISOString().split("T")[0];
-        const startEl = document.getElementById("reportStartDate");
-        const endEl = document.getElementById("reportEndDate");
-        if (startEl) startEl.value = fmt(thirtyDaysAgo);
-        if (endEl) endEl.value = fmt(today);
-      }
-
-      async initSaasFirebase() {
-        try {
-          const appMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
-          const authMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
-          const fsMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
-
-          this.authMod = authMod;
-          this.fsMod = fsMod;
-
-          const app = appMod.initializeApp(DEFAULT_FIREBASE_CONFIG, "saas-auth-app");
-          this.auth = authMod.getAuth(app);
-          this.db = fsMod.getFirestore(app);
-
-          authMod.onAuthStateChanged(this.auth, async (user) => {
-            if (this.isRegisteringFlow) return;
-            if (!user) {
-              this.lockAppGate();
-              return;
-            }
-
-            const emailLower = (user.email || "").toLowerCase();
-            const isGoogleSignIn = user.providerData && user.providerData.some(p => p.providerId === "google.com");
-
-            // Double Opt-in Check: Block unverified email/password users
-            if (!user.emailVerified && !isGoogleSignIn) {
-              this.showAuthMessage(
-                `⚠️ 您的信箱 (${user.email}) 尚未完成驗證！請前往信箱點擊驗證連結後再登入。（溫馨提醒：驗證信有時會跑到「垃圾郵件匣」，請記得前往確認唷！）`,
-                "rose"
-              );
-              const resendBox = document.getElementById("resendVerifyContainer");
-              if (resendBox) resendBox.classList.remove("hidden");
-              this.lockAppGate();
-              return;
-            }
-
-            await this.syncMemberProfileOnLogin(user);
-          });
-        } catch (err) {
-          console.warn("Firebase SaaS Auth initialization notice:", err);
-        }
-      }
-
-      switchAuthTab(tab) {
-        const loginForm = document.getElementById("loginForm");
-        const regForm = document.getElementById("registerForm");
-        const forgotForm = document.getElementById("forgotForm");
-        const tabLogin = document.getElementById("authTab-login");
-        const tabReg = document.getElementById("authTab-register");
-        const resendBox = document.getElementById("resendVerifyContainer");
-        if (resendBox) resendBox.classList.add("hidden");
-        this.hideAuthMessage();
-
-        loginForm.classList.toggle("hidden", tab !== "login");
-        regForm.classList.toggle("hidden", tab !== "register");
-        forgotForm.classList.toggle("hidden", tab !== "forgot");
-
-        if (tab === "login") {
-          tabLogin.className = "flex-1 py-2.5 rounded-lg text-xs sm:text-sm font-black transition bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 shadow";
-          tabReg.className = "flex-1 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition text-slate-400 hover:text-white";
-        } else if (tab === "register") {
-          tabReg.className = "flex-1 py-2.5 rounded-lg text-xs sm:text-sm font-black transition bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 shadow";
-          tabLogin.className = "flex-1 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition text-slate-400 hover:text-white";
-        }
-      }
-
-      togglePasswordVisibility(inputId, iconId) {
-        const input = document.getElementById(inputId);
-        const icon = document.getElementById(iconId);
-        if (!input || !icon) return;
-        if (input.type === "password") {
-          input.type = "text";
-          icon.className = "fa-solid fa-eye-slash text-amber-400";
-        } else {
-          input.type = "password";
-          icon.className = "fa-solid fa-eye";
-        }
-      }
-
-      showAuthMessage(htmlText, type = "emerald") {
-        const box = document.getElementById("authMessageAlert");
-        if (!box) return;
-        box.classList.remove("hidden");
-        if (type === "emerald") {
-          box.className = "rounded-xl p-3.5 text-xs sm:text-sm font-bold leading-relaxed border bg-emerald-950/90 border-emerald-500/60 text-emerald-300 shadow-lg";
-        } else {
-          box.className = "rounded-xl p-3.5 text-xs sm:text-sm font-bold leading-relaxed border bg-rose-950/90 border-rose-500/60 text-rose-300 shadow-lg";
-        }
-        box.innerHTML = htmlText;
-      }
-
-      hideAuthMessage() {
-        const box = document.getElementById("authMessageAlert");
-        if (box) box.classList.add("hidden");
-      }
-
-      async handleRegister(event) {
-        event.preventDefault();
-        const realName = document.getElementById("regRealName").value.trim();
-        const email = document.getElementById("regEmail").value.trim().toLowerCase();
-        const password = document.getElementById("regPassword").value;
-        const identityRadio = document.querySelector('input[name="regIdentity"]:checked');
-        const identity = identityRadio ? identityRadio.value : "TONY老師學員";
-
-        const btn = document.getElementById("registerSubmitBtn");
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 正在建立帳號並發送認證信...`;
-
-        try {
-          this.isRegisteringFlow = true;
-          const cred = await this.authMod.createUserWithEmailAndPassword(this.auth, email, password);
-          const user = cred.user;
-
-          // Save profile to Firestore before signing out
-          const isCreator = email === CREATOR_ADMIN_EMAIL;
-          const role = isCreator ? "admin" : "user";
-          const nowIso = new Date().toISOString();
-
-          const profileData = {
-            uid: user.uid,
-            email: email,
-            realName: realName,
-            identity: identity,
-            role: role,
-            isCreator: isCreator,
-            registeredAt: nowIso,
-            lastLoginAt: nowIso,
-            loginCount: 0
-          };
-
-          await this.saveMemberToFirestore(user.uid, profileData);
-          await this.appendHistoryLog(user.uid, realName, email, identity, "完成會員註冊（已發送雙重驗證信）");
-
-          // Send verification email & force sign out
-          await this.authMod.sendEmailVerification(user);
-          await this.authMod.signOut(this.auth);
-          this.isRegisteringFlow = false;
-
-          this.switchAuthTab("login");
-          document.getElementById("loginEmail").value = email;
-          this.showAuthMessage(
-            `✅ 註冊成功！請至信箱 (<strong>${email}</strong>) 點擊驗證連結。<br><span class="text-amber-300 text-xs mt-1 inline-block">💡 溫馨提醒：註冊確認信有時會跑到「垃圾郵件匣」，請記得前往確認唷！</span>`,
-            "emerald"
-          );
-        } catch (err) {
-          this.isRegisteringFlow = false;
-          const msg = this.translateFirebaseAuthError(err);
-          this.showAuthMessage(`❌ 註冊失敗：${msg}`, "rose");
-        } finally {
-          btn.disabled = false;
-          btn.innerHTML = `<i class="fa-solid fa-envelope-circle-check"></i> 註冊帳號並發送驗證信`;
-        }
-      }
-
-      async handleLogin(event) {
-        event.preventDefault();
-        const email = document.getElementById("loginEmail").value.trim().toLowerCase();
-        const password = document.getElementById("loginPassword").value;
-        const btn = document.getElementById("loginSubmitBtn");
-
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 正在驗證會員憑證...`;
-        this.hideAuthMessage();
-
-        try {
-          const cred = await this.authMod.signInWithEmailAndPassword(this.auth, email, password);
-          const user = cred.user;
-          await user.reload();
-
-          if (!user.emailVerified) {
-            this.unverifiedTempUser = user;
-            const resendBox = document.getElementById("resendVerifyContainer");
-            if (resendBox) resendBox.classList.remove("hidden");
-            await this.authMod.signOut(this.auth);
-            this.showAuthMessage(
-              `🚫 登入遭拒：您的信箱 (<strong>${email}</strong>) 尚未點擊驗證連結！請先至信箱完成驗證。<br><span class="text-amber-300 text-xs mt-1 inline-block">💡 溫馨提醒：註冊確認信有時會跑到「垃圾郵件匣」，請記得前往確認唷！</span>`,
-              "rose"
-            );
-            return;
-          }
-
-          await this.syncMemberProfileOnLogin(user);
-        } catch (err) {
-          const msg = this.translateFirebaseAuthError(err);
-          this.showAuthMessage(`❌ 登入失敗：${msg}`, "rose");
-        } finally {
-          btn.disabled = false;
-          btn.innerHTML = `<i class="fa-solid fa-key"></i> 立即登入進入賓果大廳`;
-        }
-      }
-
-      async resendVerificationEmail() {
-        try {
-          const email = document.getElementById("loginEmail").value.trim();
-          const password = document.getElementById("loginPassword").value;
-          if (!email || !password) {
-            this.showAuthMessage("⚠️ 請先在下方輸入您的 Email 與密碼，再點擊重新發送驗證信。", "rose");
-            return;
-          }
-          this.isRegisteringFlow = true;
-          const cred = await this.authMod.signInWithEmailAndPassword(this.auth, email, password);
-          await this.authMod.sendEmailVerification(cred.user);
-          await this.authMod.signOut(this.auth);
-          this.isRegisteringFlow = false;
-          this.showAuthMessage(
-            `✅ 已重新發送驗證信至 <strong>${email}</strong>！請至收件匣或「垃圾郵件匣」點擊驗證連結。`,
-            "emerald"
-          );
-        } catch (err) {
-          this.isRegisteringFlow = false;
-          this.showAuthMessage(`⚠️ 重發驗證信失敗：${this.translateFirebaseAuthError(err)}`, "rose");
-        }
-      }
-
-      async handleForgotPassword(event) {
-        event.preventDefault();
-        const email = document.getElementById("forgotEmail").value.trim().toLowerCase();
-        const btn = document.getElementById("forgotSubmitBtn");
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 發送重設信中...`;
-
-        try {
-          await this.authMod.sendPasswordResetEmail(this.auth, email);
-          this.showAuthMessage(
-            `✅ 密碼重設信已發送至 <strong>${email}</strong>！<br><span class="text-amber-300 text-xs mt-1 inline-block">💡 溫馨提醒：確認信有時會跑到「垃圾郵件匣」，請記得前往確認唷！</span>`,
-            "emerald"
-          );
-        } catch (err) {
-          this.showAuthMessage(`❌ 發送失敗：${this.translateFirebaseAuthError(err)}`, "rose");
-        } finally {
-          btn.disabled = false;
-          btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> 發送密碼重設信`;
-        }
-      }
-
-      async handleGoogleLogin() {
-        try {
-          const provider = new this.authMod.GoogleAuthProvider();
-          const cred = await this.authMod.signInWithPopup(this.auth, provider);
-          await this.syncMemberProfileOnLogin(cred.user);
-        } catch (err) {
-          this.showAuthMessage(`❌ Google 登入未完成：${this.translateFirebaseAuthError(err)}`, "rose");
-        }
-      }
-
-      async syncMemberProfileOnLogin(user) {
-        const emailLower = (user.email || "").toLowerCase();
-        const isCreator = emailLower === CREATOR_ADMIN_EMAIL;
-        const nowIso = new Date().toISOString();
-
-        let existing = await this.getMemberFromFirestore(user.uid);
-        if (!existing) {
-          existing = {
-            uid: user.uid,
-            email: emailLower,
-            realName: user.displayName || emailLower.split("@")[0],
-            identity: isCreator ? "系統創作者 (TONY顧問)" : "TONY老師學員",
-            role: isCreator ? "admin" : "user",
-            isCreator: isCreator,
-            registeredAt: nowIso,
-            lastLoginAt: nowIso,
-            loginCount: 1
-          };
-        } else {
-          existing.loginCount = (Number(existing.loginCount) || 0) + 1;
-          existing.lastLoginAt = nowIso;
-          if (isCreator) {
-            existing.role = "admin";
-            existing.isCreator = true;
-          }
-        }
-
-        await this.saveMemberToFirestore(user.uid, existing);
-        await this.appendHistoryLog(
-          user.uid,
-          existing.realName,
-          existing.email,
-          existing.identity,
-          `登入系統成功 (累計第 ${existing.loginCount} 次登錄)`
-        );
-
-        this.currentUser = user;
-        this.currentProfile = existing;
-        this.unlockAppGate(existing);
-      }
-
-      unlockAppGate(profile) {
-        document.getElementById("saasAuthGate").classList.add("hidden");
-        document.getElementById("mainAppContent").classList.remove("hidden");
-
-        // Sync member realName into Bingo player nickname
-        if (window.app && profile.realName) {
-          window.app.updatePlayerName(profile.realName);
-        }
-
-        // Update top navbar user badge & Admin button visibility
-        const badgeEl = document.getElementById("navUserBadge");
-        if (badgeEl) {
-          badgeEl.textContent = `${profile.realName} (${profile.role === "admin" ? "Admin" : profile.identity})`;
-        }
-
-        const adminBtn = document.getElementById("navAdminDashboardBtn");
-        if (adminBtn) {
-          const isAdmin = profile.role === "admin" || profile.email === CREATOR_ADMIN_EMAIL;
-          adminBtn.classList.toggle("hidden", !isAdmin);
-        }
-      }
-
-      lockAppGate() {
-        document.getElementById("mainAppContent").classList.add("hidden");
-        document.getElementById("saasAuthGate").classList.remove("hidden");
-      }
-
-      async handleLogout() {
-        try {
-          if (this.currentProfile) {
-            await this.appendHistoryLog(
-              this.currentProfile.uid,
-              this.currentProfile.realName,
-              this.currentProfile.email,
-              this.currentProfile.identity,
-              "會員主動登出系統"
-            );
-          }
-          await this.authMod.signOut(this.auth);
-        } catch (e) {}
-        this.currentUser = null;
-        this.currentProfile = null;
-        this.lockAppGate();
-      }
-
-      /* ==================== FIRESTORE MEMBER & HISTORY CRUD ==================== */
-      async getMemberFromFirestore(uid) {
-        if (!this.db || !this.fsMod) return null;
-        try {
-          const { doc, getDoc } = this.fsMod;
-          const snap = await getDoc(doc(this.db, "bingo_rooms", "saas_directory", "members", uid));
-          return snap.exists() ? snap.data() : null;
-        } catch (e) {
-          return null;
-        }
-      }
-
-      async saveMemberToFirestore(uid, data) {
-        if (!this.db || !this.fsMod) return;
-        try {
-          const { doc, setDoc } = this.fsMod;
-          await setDoc(doc(this.db, "bingo_rooms", "saas_directory", "members", uid), data, { merge: true });
-        } catch (e) {
-          console.warn("Save member notice:", e);
-        }
-      }
-
-      async appendHistoryLog(uid, realName, email, identity, actionText) {
-        if (!this.db || !this.fsMod) return;
-        try {
-          const { doc, setDoc } = this.fsMod;
-          const logId = `log_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-          await setDoc(doc(this.db, "bingo_rooms", "saas_history", "players", logId), {
-            logId,
-            uid,
-            realName,
-            email,
-            identity,
-            action: actionText,
-            timestamp: new Date().toISOString()
-          });
-        } catch (e) {}
-      }
-
-      /* ==================== ADMIN DASHBOARD OPERATIONS ==================== */
-      async openAdminModal() {
-        document.getElementById("adminDashboardModal").classList.remove("hidden");
-        await this.refreshMembersList();
-      }
-
-      closeAdminModal() {
-        document.getElementById("adminDashboardModal").classList.add("hidden");
-      }
-
-      switchAdminTab(tabName) {
-        ["members", "history", "aireport"].forEach(t => {
-          document.getElementById(`adminView-${t}`).classList.toggle("hidden", t !== tabName);
-          const btn = document.getElementById(`adminTabBtn-${t}`);
-          if (btn) {
-            btn.className = t === tabName
-              ? "px-4 py-2 rounded-xl text-xs font-black bg-amber-500 text-slate-950 transition"
-              : "px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition";
-          }
-        });
-      }
-
-      async refreshMembersList() {
-        if (!this.db || !this.fsMod) return;
-        try {
-          const { collection, getDocs } = this.fsMod;
-          const snap = await getDocs(collection(this.db, "bingo_rooms", "saas_directory", "members"));
-          const list = [];
-          snap.forEach(d => list.push(d.data()));
-
-          // Ensure Creator mindnodeai@gmail.com is always present and protected
-          const hasCreator = list.some(m => (m.email || "").toLowerCase() === CREATOR_ADMIN_EMAIL);
-          if (!hasCreator) {
-            list.unshift({
-              uid: "creator_tony",
-              email: CREATOR_ADMIN_EMAIL,
-              realName: "TONY 楊文澤 老師",
-              identity: "系統創作者 (TONY顧問)",
-              role: "admin",
-              isCreator: true,
-              registeredAt: "2020-01-01T00:00:00.000Z",
-              lastLoginAt: new Date().toISOString(),
-              loginCount: 99
-            });
-          }
-
-          list.sort((a, b) => {
-            if ((a.email || "").toLowerCase() === CREATOR_ADMIN_EMAIL) return -1;
-            if ((b.email || "").toLowerCase() === CREATOR_ADMIN_EMAIL) return 1;
-            return (b.registeredAt || "").localeCompare(a.registeredAt || "");
-          });
-
-          this.membersList = list;
-          this.renderMembersTable();
-
-          // Load History Logs
-          const histSnap = await getDocs(collection(this.db, "bingo_rooms", "saas_history", "players"));
-          const logs = [];
-          histSnap.forEach(d => logs.push(d.data()));
-          logs.sort((a, b) => (b.timestamp || "").localeCompare(a.timestamp || ""));
-          this.historyLogs = logs;
-          this.renderHistoryTable();
-        } catch (err) {
-          console.warn("Admin fetch error:", err);
-        }
-      }
-
-      renderMembersTable() {
-        const tbody = document.getElementById("adminMembersTableBody");
-        if (!tbody) return;
-
-        const q = (document.getElementById("adminMemberSearchInput")?.value || "").trim().toLowerCase();
-        const filtered = this.membersList.filter(m => {
-          if (!q) return true;
-          return (
-            (m.realName || "").toLowerCase().includes(q) ||
-            (m.email || "").toLowerCase().includes(q) ||
-            (m.identity || "").toLowerCase().includes(q)
-          );
-        });
-
-        // Update Top Stats
-        document.getElementById("adminTotalMembersCount").textContent = this.membersList.length;
-        const students = this.membersList.filter(m => (m.identity || "").includes("學員") && !(m.identity || "").includes("非學員")).length;
-        const guests = this.membersList.filter(m => (m.identity || "").includes("非學員")).length;
-        const totalLogins = this.membersList.reduce((acc, m) => acc + (Number(m.loginCount) || 0), 0);
-        document.getElementById("statStudentsCount").textContent = students;
-        document.getElementById("statGuestsCount").textContent = guests;
-        document.getElementById("statTotalLogins").textContent = totalLogins;
-
-        tbody.innerHTML = filtered.map(m => {
-          const emailLower = (m.email || "").toLowerCase();
-          const isCreator = emailLower === CREATOR_ADMIN_EMAIL || m.isCreator;
-          const isAdmin = m.role === "admin" || isCreator;
-          const regDate = m.registeredAt ? new Date(m.registeredAt).toLocaleString("zh-TW") : "--";
-
-          return `
-            <tr class="hover:bg-slate-900/60 transition">
-              <td class="py-3 px-3.5 font-bold text-white">
-                ${m.realName || "--"}
-                ${isCreator ? `<span class="ml-1.5 px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[10px]">👑 系統創作者</span>` : ""}
-              </td>
-              <td class="py-3 px-3.5 font-mono text-amber-300">${m.email}</td>
-              <td class="py-3 px-3.5">
-                <span class="px-2 py-0.5 rounded-md ${
-                  (m.identity || "").includes("非學員")
-                    ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
-                    : "bg-sky-500/15 text-sky-300 border border-sky-500/30"
-                } text-[11px] font-bold">${m.identity || "TONY老師學員"}</span>
-              </td>
-              <td class="py-3 px-3.5 text-slate-400 font-mono text-[11px]">${regDate}</td>
-              <td class="py-3 px-3.5">
-                ${
-                  isCreator
-                    ? `<span class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-rose-500 text-slate-950 font-black text-[10px]">最高管理員 (Creator)</span>`
-                    : isAdmin
-                      ? `<span class="px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/50 text-rose-300 font-bold text-[11px]">Admin 管理員</span>`
-                      : `<span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold text-[11px]">User 一般會員</span>`
-                }
-              </td>
-              <td class="py-3 px-3.5 text-center font-mono font-bold text-emerald-400">${m.loginCount || 1}</td>
-              <td class="py-3 px-3.5 text-right space-x-1.5 whitespace-nowrap">
-                <button onclick="window.saasAuth.filterMemberHistory('${m.email}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold text-[11px] transition">
-                  <i class="fa-solid fa-clock-rotate-left"></i> 歷史紀錄
-                </button>
-                ${
-                  isCreator
-                    ? `<span class="px-2.5 py-1 rounded-lg bg-slate-900 text-slate-500 border border-slate-800 text-[11px] font-bold cursor-not-allowed"><i class="fa-solid fa-lock"></i> 永久鎖定保護</span>`
-                    : `
-                      <button onclick="window.saasAuth.toggleMemberRole('${m.uid}', '${isAdmin ? "user" : "admin"}')" class="px-2.5 py-1 rounded-lg ${
-                        isAdmin ? "bg-amber-500/20 hover:bg-amber-500/30 text-amber-300" : "bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300"
-                      } font-bold text-[11px] transition">
-                        ${isAdmin ? "⬇ 降為 User" : "⬆ 升為 Admin"}
-                      </button>
-                      <button onclick="window.saasAuth.deleteMemberRecord('${m.uid}', '${m.email}')" class="px-2.5 py-1 rounded-lg bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white font-bold text-[11px] transition">
-                        <i class="fa-solid fa-trash-can"></i> 刪除
-                      </button>
-                    `
-                }
-              </td>
-            </tr>
-          `;
-        }).join("");
-      }
-
-      async toggleMemberRole(uid, newRole) {
-        const target = this.membersList.find(m => m.uid === uid);
-        if (!target) return;
-        if ((target.email || "").toLowerCase() === CREATOR_ADMIN_EMAIL || target.isCreator) {
-          if (window.app) window.app.showToast("⛔ 系統創作者 (mindnodeai@gmail.com) 擁有永久最高權限，不可降維！", "rose");
-          return;
-        }
-
-        target.role = newRole;
-        await this.saveMemberToFirestore(uid, { role: newRole });
-        await this.appendHistoryLog(
-          uid,
-          target.realName,
-          target.email,
-          target.identity,
-          `管理員將權限變更為：${newRole.toUpperCase()}`
-        );
-        if (window.app) window.app.showToast(`✅ 已將「${target.realName}」權限更新為 ${newRole.toUpperCase()}`, "emerald");
-        await this.refreshMembersList();
-      }
-
-      async deleteMemberRecord(uid, email) {
-        if ((email || "").toLowerCase() === CREATOR_ADMIN_EMAIL) {
-          if (window.app) window.app.showToast("⛔ 系統創作者帳號受最高保護，禁止刪除！", "rose");
-          return;
-        }
-        if (!this.db || !this.fsMod) return;
-        try {
-          const { doc, deleteDoc } = this.fsMod;
-          await deleteDoc(doc(this.db, "bingo_rooms", "saas_directory", "members", uid));
-          if (window.app) window.app.showToast(`🗑️ 已刪除會員 (${email}) 之資料紀錄`, "amber");
-          await this.refreshMembersList();
-        } catch (err) {
-          console.warn("Delete member error:", err);
-        }
-      }
-
-      filterMemberHistory(email = null) {
-        this.historyFilterEmail = email;
-        this.switchAdminTab("history");
-        const label = document.getElementById("historyFilterLabel");
-        if (label) {
-          label.textContent = email ? `會員專屬歷史足跡：${email}` : "全體會員即時歷史紀錄";
-        }
-        this.renderHistoryTable();
-      }
-
-      renderHistoryTable() {
-        const tbody = document.getElementById("adminHistoryTableBody");
-        if (!tbody) return;
-        const rows = this.historyFilterEmail
-          ? this.historyLogs.filter(l => (l.email || "").toLowerCase() === this.historyFilterEmail.toLowerCase())
-          : this.historyLogs;
-
-        if (rows.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-500">尚無符合條件的歷史活動紀錄</td></tr>`;
-          return;
-        }
-
-        tbody.innerHTML = rows.map(l => `
-          <tr class="hover:bg-slate-900/60">
-            <td class="py-2.5 px-3.5 font-mono text-[11px] text-slate-400">${l.timestamp ? new Date(l.timestamp).toLocaleString("zh-TW") : "--"}</td>
-            <td class="py-2.5 px-3.5 font-bold text-white">${l.realName || "--"}</td>
-            <td class="py-2.5 px-3.5 font-mono text-amber-300">${l.email || "--"}</td>
-            <td class="py-2.5 px-3.5 text-slate-300">${l.identity || "--"}</td>
-            <td class="py-2.5 px-3.5 text-emerald-300 font-medium">${l.action || "--"}</td>
-          </tr>
-        `).join("");
-      }
-
-      /* ==================== 5. CSV EXPORT WITH UTF-8 BOM (\ufeff) ==================== */
-      exportMembersCsv() {
-        const headers = ["真實姓名", "電子郵件(Email)", "身份別", "系統權限", "登錄次數", "註冊時間", "最後登入時間"];
-        const escapeCsv = (val) => `"${String(val ?? "").replace(/"/g, '""')}"`;
-
-        const rows = this.membersList.map(m => [
-          escapeCsv(m.realName),
-          escapeCsv(m.email),
-          escapeCsv(m.identity),
-          escapeCsv(m.isCreator ? "系統創作者(Admin)" : m.role),
-          escapeCsv(m.loginCount || 1),
-          escapeCsv(m.registeredAt ? new Date(m.registeredAt).toLocaleString("zh-TW") : ""),
-          escapeCsv(m.lastLoginAt ? new Date(m.lastLoginAt).toLocaleString("zh-TW") : "")
-        ]);
-
-        const csvString = "\ufeff" + [headers.map(escapeCsv).join(","), ...rows.map(r => r.join(","))].join("\r\n");
-        const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `TONY_BINGO_會員名單_${new Date().toISOString().slice(0, 10)}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-
-        if (window.app) window.app.showToast("📊 已匯出含 BOM 標記之繁體中文 CSV 會員名單！", "emerald");
-      }
-
-      /* ==================== 6. AI REPORT GENERATOR & WORD (.DOC) EXPORT ==================== */
-      async generateAiAdminReport() {
-        const startVal = document.getElementById("reportStartDate").value;
-        const endVal = document.getElementById("reportEndDate").value;
-        const box = document.getElementById("aiReportContentBox");
-        const btn = document.getElementById("generateAiReportBtn");
-
-        const startTs = startVal ? new Date(startVal + "T00:00:00").getTime() : 0;
-        const endTs = endVal ? new Date(endVal + "T23:59:59").getTime() : Date.now();
-
-        const filteredMembers = this.membersList.filter(m => {
-          if (!m.registeredAt) return true;
-          const t = new Date(m.registeredAt).getTime();
-          return t >= startTs && t <= endTs;
-        });
-
-        const studentsCount = filteredMembers.filter(m => (m.identity || "").includes("學員") && !(m.identity || "").includes("非學員")).length;
-        const guestsCount = filteredMembers.filter(m => (m.identity || "").includes("非學員")).length;
-        const totalLogins = filteredMembers.reduce((sum, m) => sum + (Number(m.loginCount) || 0), 0);
-
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> AI 正在撰寫營運分析報告...`;
-
-        let aiInsightsText = "";
-        if (window.app && window.app.geminiApiKey) {
-          try {
-            const sys = "你是 TONY 楊文澤老師的資深商業數據分析幕僚，請根據提供的平台會員數據撰寫專業、結構清晰的繁體中文營運分析與課程轉化建議。";
-            const prompt = `分析區間：${startVal} 至 ${endVal}。區間內註冊會員數：${filteredMembers.length} 人（其中 TONY老師學員：${studentsCount} 人，非學員一般訪客：${guestsCount} 人），總累計登錄互動次數：${totalLogins} 次。請給出：1. 會員結構與活躍度洞察；2. 針對「非學員訪客」轉化為正式學員的行銷建議；3. 針對「TONY老師學員」的課堂遊戲化留存建議。`;
-            aiInsightsText = await window.app.callGeminiAPI(prompt, sys);
-          } catch (e) {}
-        }
-
-        if (!aiInsightsText) {
-          aiInsightsText = `1. 【會員結構與互動動能分析】：於 ${startVal} 至 ${endVal} 期間，平台共涵蓋 ${filteredMembers.length} 位有效註冊會員，累計創造 ${totalLogins} 次實名登錄與賓果互動。其中「TONY老師學員」佔 ${studentsCount} 位，「非學員(一般訪客)」佔 ${guestsCount} 位，展現極佳的課堂破冰黏著度與外部口碑擴散力。\n2. 【一般訪客轉化策略】：針對 ${guestsCount} 位已完成雙重信箱驗證之「非學員訪客」，建議於課後寄發 AI 知識賓果精華題庫解析與進階公開課優惠碼，將體驗熱度直接轉化為課程報名。\n3. 【高頻學員激勵機制】：建議表揚登錄次數前 5 名之高活躍學員，於下期企業內訓或 MarTech 課程頒發榮譽籌碼徽章。`;
-        }
-
-        const reportHtml = `
-          <div style="font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; line-height: 1.7;">
-            <h2 style="color: #f59e0b; font-size: 20px; font-weight: 900; border-bottom: 2px solid #334155; padding-bottom: 8px; margin-bottom: 12px;">
-              📊 VEGAS & LOTTO AI BINGO 平台營運與學員分析報告
-            </h2>
-            <p><strong>報告統計區間：</strong> ${startVal} ～ ${endVal} ｜ <strong>系統創作者：</strong> TONY 楊文澤 資深 AI 科技顧問</p>
-            <table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse; margin: 14px 0; border-color: #475569;">
-              <tr style="background-color: #1e293b; color: #fde047;">
-                <th>統計指標</th>
-                <th>數值表現</th>
-                <th>商務意義說明</th>
-              </tr>
-              <tr>
-                <td>區間涵蓋會員總數</td>
-                <td><strong>${filteredMembers.length} 人</strong></td>
-                <td>通過 Double Opt-in 實名信箱驗證之有效會員</td>
-              </tr>
-              <tr>
-                <td>TONY老師學員人數</td>
-                <td><strong>${studentsCount} 人</strong></td>
-                <td>核心課程學員與企業內訓參訓成員</td>
-              </tr>
-              <tr>
-                <td>非學員 (一般訪客) 人數</td>
-                <td><strong>${guestsCount} 人</strong></td>
-                <td>潛在招生名單與外部活動體驗來賓</td>
-              </tr>
-              <tr>
-                <td>累計登錄互動總次數</td>
-                <td><strong>${totalLogins} 次</strong></td>
-                <td>反映平台重複開啟率與課堂遊戲化參與熱度</td>
-              </tr>
-            </table>
-            <h3 style="color: #38bdf8; font-size: 16px; font-weight: 800; margin-top: 16px;">💡 AI 深度營運洞察與行動建議</h3>
-            <div style="white-space: pre-line; background: #0f172a; padding: 14px; border-radius: 10px; border: 1px solid #334155;">${aiInsightsText}</div>
-            <h3 style="color: #10b981; font-size: 16px; font-weight: 800; margin-top: 16px;">📋 區間活躍會員明細表</h3>
-            <table border="1" cellspacing="0" cellpadding="6" style="width: 100%; border-collapse: collapse; margin-top: 8px; border-color: #475569; font-size: 12px;">
-              <tr style="background-color: #1e293b; color: #f8fafc;">
-                <th>真實姓名</th>
-                <th>電子郵件</th>
-                <th>身份別</th>
-                <th>權限</th>
-                <th>登錄次數</th>
-              </tr>
-              ${filteredMembers.map(m => `
-                <tr>
-                  <td>${m.realName || "--"}</td>
-                  <td>${m.email || "--"}</td>
-                  <td>${m.identity || "--"}</td>
-                  <td>${m.role || "user"}</td>
-                  <td>${m.loginCount || 1}</td>
-                </tr>
-              `).join("")}
-            </table>
-            <p style="margin-top: 20px; font-size: 11px; color: #94a3b8; text-align: center;">
-              © 2020 TonyStudio. 本學習平台由 TONY 楊文澤資深AI科技顧問設計. All Rights Reserved.
-            </p>
-          </div>
-        `;
-
-        this.lastGeneratedReportHtml = reportHtml;
-        box.innerHTML = reportHtml;
-        btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> 產出 AI 營運分析報告`;
-      }
-
-      exportReportToWord() {
-        if (!this.lastGeneratedReportHtml) {
-          this.generateAiAdminReport();
-        }
-        const wordDocContent = `
-          <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-          <head><meta charset='utf-8'><title>TONY STUDIO AI 分析報告</title></head>
-          <body style="font-family: 'Microsoft JhengHei', sans-serif; color: #0f172a;">
-            ${this.lastGeneratedReportHtml}
-          </body>
-          </html>
-        `;
-        const blob = new Blob(["\ufeff", wordDocContent], { type: "application/msword;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `TONY_STUDIO_AI營運分析報告_${new Date().toISOString().slice(0, 10)}.doc`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-
-        if (window.app) window.app.showToast("📄 已成功將 AI 分析報告匯出為 Word (.doc) 檔案！", "emerald");
-      }
-
-      openCreatorModal() {
-        document.getElementById("creatorProfileModal").classList.remove("hidden");
-      }
-
-      closeCreatorModal() {
-        document.getElementById("creatorProfileModal").classList.add("hidden");
-      }
-
-      translateFirebaseAuthError(err) {
-        const code = err?.code || "";
-        if (code.includes("email-already-in-use")) return "此 Email 已經註冊過，請直接切換至「會員登入」或使用「忘記密碼」。";
-        if (code.includes("invalid-email")) return "Email 格式不正確，請重新檢查。";
-        if (code.includes("weak-password")) return "密碼強度不足，請設定至少 6 位字元。";
-        if (code.includes("invalid-credential") || code.includes("wrong-password") || code.includes("user-not-found")) {
-          return "帳號或密碼錯誤，請確認後重試。";
-        }
-        return err?.message || "發生未知驗證錯誤";
-      }
-    }
-
     window.addEventListener("DOMContentLoaded", () => {
       window.app = new VegasAiBingoApp();
-      window.saasAuth = new SaasMembershipManager();
     });
   </script>
 </body>
