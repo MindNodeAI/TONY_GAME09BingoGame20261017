@@ -397,13 +397,25 @@
           </div>
 
           <!-- Quick Stage Host Action Bar -->
-          <div class="mt-4 pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
-            <button onclick="window.app.drawNextBall()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:brightness-110 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-bolt"></i> 搖出下一球 (Draw Ball)
-            </button>
-            <button onclick="window.app.toggleAutoDraw()" id="stageAutoDrawBtn" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold text-xs sm:text-sm transition flex items-center gap-1.5">
-              <i class="fa-solid fa-clock"></i> <span id="stageAutoDrawLabel">自動開獎: 關</span>
-            </button>
+          <div class="mt-4 pt-3 border-t border-slate-800 space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <button onclick="window.app.drawNextBall()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:brightness-110 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-bolt"></i> 搖出下一球 (Draw Ball)
+              </button>
+              <button onclick="window.app.toggleAutoDraw()" id="stageAutoDrawBtn" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold text-xs sm:text-sm transition flex items-center gap-1.5">
+                <i class="fa-solid fa-clock"></i> <span id="stageAutoDrawLabel">自動開獎 (20秒): 關</span>
+              </button>
+            </div>
+            <!-- 自動開獎即時倒數進度條 -->
+            <div id="stageCountdownBarWrap" class="hidden bg-slate-950 rounded-lg p-2 border border-amber-500/40">
+              <div class="flex items-center justify-between text-[11px] font-mono text-amber-300 mb-1">
+                <span>⏱️ 距離下一球自動搖出：</span>
+                <span id="stageCountdownText" class="font-black text-rose-400">20 秒</span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div id="stageCountdownProgress" class="h-full bg-gradient-to-r from-amber-400 to-rose-500 transition-all duration-500" style="width: 100%;"></div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -701,13 +713,39 @@
               </div>
             </div>
 
+            <!-- 3. 後台開獎間隔秒數設定 (連動自動開獎) -->
+            <div class="space-y-2.5 pt-3 border-t border-slate-800">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <i class="fa-solid fa-hourglass-half"></i> 3. 設定自動開獎間隔秒數 (Draw Interval)
+                </label>
+                <span class="text-[11px] text-slate-400">目前設定：每 <strong id="hostIntervalDisplayBadge" class="text-emerald-400 font-mono">20</strong> 秒搖出一球</span>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-12 gap-2 items-center">
+                <div class="col-span-2 sm:col-span-8 flex flex-wrap gap-1.5">
+                  <button onclick="window.app.setAutoDrawInterval(10)" id="intBtn-10" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:border-amber-400 text-xs font-mono font-bold transition">10秒 (極速)</button>
+                  <button onclick="window.app.setAutoDrawInterval(15)" id="intBtn-15" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:border-amber-400 text-xs font-mono font-bold transition">15秒</button>
+                  <button onclick="window.app.setAutoDrawInterval(20)" id="intBtn-20" class="px-2.5 py-1.5 rounded-lg border-2 border-amber-400 bg-amber-500/20 text-amber-300 text-xs font-mono font-black transition">20秒 (推薦)</button>
+                  <button onclick="window.app.setAutoDrawInterval(30)" id="intBtn-30" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:border-amber-400 text-xs font-mono font-bold transition">30秒 (課堂思考)</button>
+                  <button onclick="window.app.setAutoDrawInterval(45)" id="intBtn-45" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:border-amber-400 text-xs font-mono font-bold transition">45秒</button>
+                  <button onclick="window.app.setAutoDrawInterval(60)" id="intBtn-60" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:border-amber-400 text-xs font-mono font-bold transition">60秒</button>
+                </div>
+                <div class="col-span-2 sm:col-span-4 flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-xl border border-slate-800">
+                  <span class="text-[11px] text-slate-400 whitespace-nowrap">自訂秒數:</span>
+                  <input id="customDrawIntervalInput" type="number" min="3" max="300" value="20" onchange="window.app.setAutoDrawInterval(this.value)" class="w-full bg-transparent text-amber-300 font-mono font-black text-sm text-center focus:outline-none">
+                  <span class="text-[11px] text-slate-400">秒</span>
+                </div>
+              </div>
+            </div>
+
             <div class="space-y-3 pt-3 border-t border-slate-800">
               <div class="flex flex-wrap gap-2.5">
                 <button onclick="window.app.drawNextBall()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black text-sm shadow-lg transition flex items-center justify-center gap-2">
                   <i class="fa-solid fa-play"></i> 搖出下一球
                 </button>
                 <button onclick="window.app.toggleAutoDraw()" id="hostAutoDrawBtn" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs sm:text-sm transition">
-                  <i class="fa-solid fa-clock mr-1"></i> 自動開獎 (每 6 秒)
+                  <i class="fa-solid fa-clock mr-1"></i> <span id="hostAutoDrawBtnLabel">自動開獎 (每 20 秒)</span>
                 </button>
                 <button onclick="window.app.resetCurrentSession()" class="py-3 px-4 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-500/40 text-rose-200 font-bold text-xs sm:text-sm transition">
                   <i class="fa-solid fa-rotate-right mr-1"></i> 重置新局
@@ -1434,6 +1472,7 @@ service cloud.firestore {
           title: "第 108 期：AI 主題知識專場",
           gameMode: "ai_theme",
           winningPattern: "single_line",
+          autoDrawIntervalSec: 20, // 預設後台開獎秒數為 20 秒
           deckTitle: BUILTIN_THEMES.ai_marketing.deckTitle,
           deckItems: BUILTIN_THEMES.ai_marketing.items,
           drawnBalls: [],
@@ -1444,6 +1483,8 @@ service cloud.firestore {
 
         this.playersMap = new Map();
         this.autoDrawTimer = null;
+        this.countdownTickTimer = null;
+        this.remainingSec = 20;
         this.geminiApiKey = "";
         this.customFirebaseJson = JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
 
@@ -1720,6 +1761,7 @@ service cloud.firestore {
             title: this.session.title,
             gameMode: this.session.gameMode,
             winningPattern: this.session.winningPattern,
+            autoDrawIntervalSec: this.session.autoDrawIntervalSec || 20,
             deckTitle: this.session.deckTitle,
             deckItemsJson: JSON.stringify(this.session.deckItems),
             drawnBalls: this.session.drawnBalls,
@@ -2346,15 +2388,112 @@ service cloud.firestore {
         }
       }
 
+      setAutoDrawInterval(seconds) {
+        const parsed = Math.max(3, Math.min(300, parseInt(seconds, 10) || 20));
+        this.session.autoDrawIntervalSec = parsed;
+        this.remainingSec = parsed;
+
+        const customInput = document.getElementById("customDrawIntervalInput");
+        if (customInput) customInput.value = parsed;
+
+        this.updateAutoDrawUI();
+        this.pushSessionToCloud();
+
+        // 若目前正在自動開獎中，立即套用新的後台設定秒數重新計時
+        if (this.autoDrawTimer) {
+          this.startAutoDrawLoop();
+          this.showToast(`⏱️ 自動開獎間隔已即時更新為每 ${parsed} 秒一球！`, "emerald");
+        } else {
+          this.showToast(`⏱️ 後台自動開獎秒數已設定為 ${parsed} 秒！`, "amber");
+        }
+      }
+
+      startAutoDrawLoop() {
+        if (this.autoDrawTimer) clearInterval(this.autoDrawTimer);
+        if (this.countdownTickTimer) clearInterval(this.countdownTickTimer);
+
+        const intervalSec = this.session.autoDrawIntervalSec || 20;
+        this.remainingSec = intervalSec;
+        this.updateAutoDrawUI();
+
+        const wrap = document.getElementById("stageCountdownBarWrap");
+        if (wrap) wrap.classList.remove("hidden");
+
+        this.countdownTickTimer = setInterval(() => {
+          this.remainingSec = Math.max(0, this.remainingSec - 1);
+          this.updateAutoDrawUI();
+        }, 1000);
+
+        this.autoDrawTimer = setInterval(() => {
+          this.remainingSec = this.session.autoDrawIntervalSec || 20;
+          this.updateAutoDrawUI();
+          this.drawNextBall();
+        }, intervalSec * 1000);
+      }
+
+      updateAutoDrawUI() {
+        const intervalSec = this.session.autoDrawIntervalSec || 20;
+        const isRunning = Boolean(this.autoDrawTimer);
+
+        const stageLbl = document.getElementById("stageAutoDrawLabel");
+        if (stageLbl) {
+          stageLbl.textContent = isRunning
+            ? `自動開獎中 (${this.remainingSec}s / ${intervalSec}s)`
+            : `自動開獎 (${intervalSec}秒): 關`;
+        }
+
+        const stageBtn = document.getElementById("stageAutoDrawBtn");
+        if (stageBtn) {
+          stageBtn.className = isRunning
+            ? "py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 border border-rose-400 text-white font-black text-xs sm:text-sm transition flex items-center gap-1.5 shadow-lg shadow-rose-600/30"
+            : "py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold text-xs sm:text-sm transition flex items-center gap-1.5";
+        }
+
+        const hostLbl = document.getElementById("hostAutoDrawBtnLabel");
+        if (hostLbl) {
+          hostLbl.textContent = isRunning
+            ? `⏸️ 暫停自動開獎 (倒數 ${this.remainingSec}s)`
+            : `自動開獎 (每 ${intervalSec} 秒)`;
+        }
+
+        const hostBtn = document.getElementById("hostAutoDrawBtn");
+        if (hostBtn) {
+          hostBtn.className = isRunning
+            ? "py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 border border-rose-400 text-white font-black text-xs sm:text-sm transition shadow-lg"
+            : "py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs sm:text-sm transition";
+        }
+
+        const badge = document.getElementById("hostIntervalDisplayBadge");
+        if (badge) badge.textContent = intervalSec;
+
+        [10, 15, 20, 30, 45, 60].forEach(sec => {
+          const b = document.getElementById(`intBtn-${sec}`);
+          if (b) {
+            b.className = (intervalSec === sec)
+              ? "px-2.5 py-1.5 rounded-lg border-2 border-amber-400 bg-amber-500/20 text-amber-300 text-xs font-mono font-black transition"
+              : "px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:border-amber-400 text-xs font-mono font-bold transition";
+          }
+        });
+
+        const cdText = document.getElementById("stageCountdownText");
+        if (cdText) cdText.textContent = `${this.remainingSec} 秒`;
+
+        const cdBar = document.getElementById("stageCountdownProgress");
+        if (cdBar) {
+          const pct = Math.max(0, Math.min(100, (this.remainingSec / intervalSec) * 100));
+          cdBar.style.width = `${pct}%`;
+        }
+      }
+
       toggleAutoDraw() {
+        const intervalSec = this.session.autoDrawIntervalSec || 20;
         if (this.autoDrawTimer) {
           this.stopAutoDraw();
           this.showToast("⏸️ 已暫停自動搖珠開獎", "slate");
         } else {
           this.drawNextBall();
-          this.autoDrawTimer = setInterval(() => this.drawNextBall(), 6000);
-          document.getElementById("stageAutoDrawLabel").textContent = "自動開獎中 (6s)";
-          this.showToast("▶️ 已啟動每 6 秒自動開獎！", "emerald");
+          this.startAutoDrawLoop();
+          this.showToast(`▶️ 已啟動每 ${intervalSec} 秒自動開獎！`, "emerald");
         }
       }
 
@@ -2363,8 +2502,13 @@ service cloud.firestore {
           clearInterval(this.autoDrawTimer);
           this.autoDrawTimer = null;
         }
-        const lbl = document.getElementById("stageAutoDrawLabel");
-        if (lbl) lbl.textContent = "自動開獎: 關";
+        if (this.countdownTickTimer) {
+          clearInterval(this.countdownTickTimer);
+          this.countdownTickTimer = null;
+        }
+        const wrap = document.getElementById("stageCountdownBarWrap");
+        if (wrap) wrap.classList.add("hidden");
+        this.updateAutoDrawUI();
       }
 
       changeGameMode(mode) {
@@ -2781,6 +2925,7 @@ service cloud.firestore {
 
       renderHostView() {
         document.getElementById("hostRoomCodeLabel").textContent = this.roomCode;
+        this.updateAutoDrawUI();
 
         ["ai_theme", "classic_75", "speed_30"].forEach(m => {
           const btn = document.getElementById(`modeBtn-${m}`);
