@@ -399,21 +399,27 @@
           <!-- Quick Stage Host Action Bar -->
           <div class="mt-4 pt-3 border-t border-slate-800 space-y-2">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <button onclick="window.app.drawNextBall()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:brightness-110 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-bolt"></i> 搖出下一球 (Draw Ball)
+              <button onclick="window.app.drawNextBall(true)" id="stageManualDrawBtn" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:brightness-110 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-hand-pointer"></i> 手動搖下一球
               </button>
-              <button onclick="window.app.toggleAutoDraw()" id="stageAutoDrawBtn" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold text-xs sm:text-sm transition flex items-center gap-1.5">
-                <i class="fa-solid fa-clock"></i> <span id="stageAutoDrawLabel">自動開獎 (20秒): 關</span>
+              <button onclick="window.app.toggleAutoDraw()" id="stageAutoDrawBtn" class="py-3 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold text-xs sm:text-sm transition flex items-center gap-1.5">
+                <i class="fa-solid fa-play" id="stageAutoDrawIcon"></i> <span id="stageAutoDrawLabel">啟動自動開獎 (20秒)</span>
+              </button>
+              <button onclick="window.app.emergencyStopAllDraws()" title="強制煞車！停止所有視窗的自動開球" class="py-3 px-3.5 rounded-xl bg-rose-700 hover:bg-rose-600 border border-rose-400 text-white font-black text-xs sm:text-sm transition flex items-center gap-1 shadow-lg shadow-rose-700/30">
+                <i class="fa-solid fa-octagon-exclamation"></i> 強制停止
               </button>
             </div>
             <!-- 自動開獎即時倒數進度條 -->
-            <div id="stageCountdownBarWrap" class="hidden bg-slate-950 rounded-lg p-2 border border-amber-500/40">
-              <div class="flex items-center justify-between text-[11px] font-mono text-amber-300 mb-1">
-                <span>⏱️ 距離下一球自動搖出：</span>
-                <span id="stageCountdownText" class="font-black text-rose-400">20 秒</span>
+            <div id="stageCountdownBarWrap" class="hidden bg-slate-950 rounded-lg p-2.5 border border-rose-500/60">
+              <div class="flex items-center justify-between text-[11px] font-mono text-amber-300 mb-1.5">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>⏱️ 自動開獎執行中，距離下一球：</span>
+                <div class="flex items-center gap-2">
+                  <span id="stageCountdownText" class="font-black text-rose-400 text-xs">20 秒</span>
+                  <button onclick="window.app.emergencyStopAllDraws()" class="px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-black">立即停止 ✕</button>
+                </div>
               </div>
               <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                <div id="stageCountdownProgress" class="h-full bg-gradient-to-r from-amber-400 to-rose-500 transition-all duration-500" style="width: 100%;"></div>
+                <div id="stageCountdownProgress" class="h-full bg-gradient-to-r from-amber-400 to-rose-500 transition-all duration-300" style="width: 100%;"></div>
               </div>
             </div>
           </div>
@@ -523,14 +529,11 @@
 
             <div class="flex items-center justify-between gap-2 pt-1">
               <div class="text-[11px] text-slate-400">
-                本局已開: <strong id="playerDrawnCount" class="text-amber-300">0</strong> 球
+                本局已開: <strong id="playerDrawnCount" class="text-amber-300">0</strong> 球 · <span class="text-emerald-400">由講台莊家統一搖球開獎</span>
               </div>
               <div class="flex items-center gap-2">
-                <button onclick="window.app.drawNextBall()" class="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 text-xs font-bold transition flex items-center gap-1">
-                  <i class="fa-solid fa-dice"></i> 搖下一球
-                </button>
-                <button onclick="window.app.regenerateMyCard()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
-                  <i class="fa-solid fa-rotate"></i> 換張新卡
+                <button onclick="window.app.regenerateMyCard()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-300 text-xs font-bold transition flex items-center gap-1">
+                  <i class="fa-solid fa-rotate"></i> 換張新賓果卡
                 </button>
               </div>
             </div>
@@ -737,17 +740,28 @@
                   <span class="text-[11px] text-slate-400">秒</span>
                 </div>
               </div>
+
+              <!-- 防爆走保護開關 -->
+              <div class="pt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300 bg-slate-950/90 p-2.5 rounded-xl border border-slate-800">
+                <label class="flex items-center gap-2 cursor-pointer select-none">
+                  <input type="checkbox" id="pauseOnBingoCheckbox" checked onchange="window.app.togglePauseOnBingo(this.checked)" class="accent-amber-500 w-4 h-4 rounded">
+                  <span class="font-bold text-amber-300">🛡️ 當有學員喊出 BINGO 獲勝時，自動暫停開獎（防止球繼續亂跑）</span>
+                </label>
+              </div>
             </div>
 
             <div class="space-y-3 pt-3 border-t border-slate-800">
-              <div class="flex flex-wrap gap-2.5">
-                <button onclick="window.app.drawNextBall()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black text-sm shadow-lg transition flex items-center justify-center gap-2">
-                  <i class="fa-solid fa-play"></i> 搖出下一球
+              <div class="flex flex-wrap gap-2">
+                <button onclick="window.app.drawNextBall(true)" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black text-sm shadow-lg transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-hand-pointer"></i> 手動搖下一球
                 </button>
                 <button onclick="window.app.toggleAutoDraw()" id="hostAutoDrawBtn" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs sm:text-sm transition">
-                  <i class="fa-solid fa-clock mr-1"></i> <span id="hostAutoDrawBtnLabel">自動開獎 (每 20 秒)</span>
+                  <i class="fa-solid fa-clock mr-1"></i> <span id="hostAutoDrawBtnLabel">啟動自動開獎 (每 20 秒)</span>
                 </button>
-                <button onclick="window.app.resetCurrentSession()" class="py-3 px-4 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-500/40 text-rose-200 font-bold text-xs sm:text-sm transition">
+                <button onclick="window.app.emergencyStopAllDraws()" class="py-3 px-4 rounded-xl bg-rose-700 hover:bg-rose-600 border border-rose-400 text-white font-black text-xs sm:text-sm transition shadow-lg">
+                  <i class="fa-solid fa-octagon-exclamation mr-1"></i> 強制停止開球
+                </button>
+                <button onclick="window.app.resetCurrentSession()" class="py-3 px-4 rounded-xl bg-slate-900 hover:bg-rose-950 border border-rose-500/40 text-rose-300 font-bold text-xs sm:text-sm transition">
                   <i class="fa-solid fa-rotate-right mr-1"></i> 重置新局
                 </button>
               </div>
@@ -1473,6 +1487,10 @@ service cloud.firestore {
           gameMode: "ai_theme",
           winningPattern: "single_line",
           autoDrawIntervalSec: 20, // 預設後台開獎秒數為 20 秒
+          isAutoDrawing: false,    // 雲端同步的自動開獎狀態鎖
+          autoDrawHostId: "",      // 紀錄哪一個莊家視窗負責計時，防止多視窗重複疊加開球
+          pauseOnBingo: true,      // 有人中獎時自動停止開球
+          brakeToken: 0,           // 緊急煞車權杖，遞增時所有端點立即清掉計時器
           deckTitle: BUILTIN_THEMES.ai_marketing.deckTitle,
           deckItems: BUILTIN_THEMES.ai_marketing.items,
           drawnBalls: [],
@@ -1484,6 +1502,9 @@ service cloud.firestore {
         this.playersMap = new Map();
         this.autoDrawTimer = null;
         this.countdownTickTimer = null;
+        this.pendingDrawTimeout = null;
+        this.isDrawingLock = false;
+        this.lastSeenBrakeToken = 0;
         this.remainingSec = 20;
         this.geminiApiKey = "";
         this.customFirebaseJson = JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
@@ -1734,7 +1755,34 @@ service cloud.firestore {
         const roundChanged = incoming.roundId && incoming.roundId !== this.session.roundId;
         const wasReset = (incoming.drawnBalls && incoming.drawnBalls.length === 0 && this.session.drawnBalls.length > 0) || roundChanged;
 
-        this.session = incoming;
+        // 若收到雲端傳來的緊急煞車訊號 (brakeToken 改變或 isAutoDrawing 被關掉)，立即無條件清除本機所有計時器！
+        if (
+          (incoming.brakeToken && incoming.brakeToken !== this.lastSeenBrakeToken) ||
+          incoming.isAutoDrawing === false ||
+          wasReset
+        ) {
+          this.lastSeenBrakeToken = incoming.brakeToken || 0;
+          this.clearLocalDrawTimersOnly();
+        }
+
+        // 若其他視窗接手了自動開獎主控權，本視窗停止計時，避免雙視窗重複搖球
+        if (incoming.isAutoDrawing && incoming.autoDrawHostId && incoming.autoDrawHostId !== this.playerId && this.autoDrawTimer) {
+          this.clearLocalDrawTimersOnly();
+        }
+
+        this.session = {
+          ...this.session,
+          ...incoming,
+          drawnBalls: Array.isArray(incoming.drawnBalls) ? incoming.drawnBalls : []
+        };
+
+        // 若本局球數已全數抽完，立即強制停止任何計時器
+        const fullPool = this.getFullPoolForCurrentMode();
+        if (this.session.drawnBalls.length >= fullPool.length) {
+          this.clearLocalDrawTimersOnly();
+          this.session.isAutoDrawing = false;
+        }
+
         if (modeChanged || wasReset) {
           this.isBingoClaimed = false;
           this.generateMyCard();
@@ -1744,6 +1792,7 @@ service cloud.firestore {
         }
         this.updateBotsProgress();
         this.updateQrCodes();
+        this.updateAutoDrawUI();
         this.renderAll();
       }
 
@@ -1762,6 +1811,10 @@ service cloud.firestore {
             gameMode: this.session.gameMode,
             winningPattern: this.session.winningPattern,
             autoDrawIntervalSec: this.session.autoDrawIntervalSec || 20,
+            isAutoDrawing: Boolean(this.session.isAutoDrawing),
+            autoDrawHostId: this.session.autoDrawHostId || "",
+            pauseOnBingo: this.session.pauseOnBingo !== false,
+            brakeToken: this.session.brakeToken || 0,
             deckTitle: this.session.deckTitle,
             deckItemsJson: JSON.stringify(this.session.deckItems),
             drawnBalls: this.session.drawnBalls,
@@ -2141,6 +2194,13 @@ service cloud.firestore {
             pattern: PATTERNS_INFO[this.session.winningPattern].name,
             ballsCount: this.session.drawnBalls.length
           });
+          // 若開啟「有人 BINGO 自動暫停開獎」，立即煞車停止搖球
+          if (this.session.pauseOnBingo !== false) {
+            this.clearLocalDrawTimersOnly();
+            this.session.isAutoDrawing = false;
+            this.session.autoDrawHostId = "";
+            this.session.brakeToken = (this.session.brakeToken || 0) + 1;
+          }
           this.pushSessionToCloud();
         }
 
@@ -2158,36 +2218,51 @@ service cloud.firestore {
               id: String(num),
               column: col,
               term: String(num),
-              riddle: `樂透極速快開彩第 ${num} 號球！請檢查九宮格有沒有 ${num} 號！`,
-              vegasCall: `極速快開 ${col}-${num}！手快有、手慢無！`
+              riddle: `樂透極速快開球號：${col}-${num}！請檢查您的九宮格手牌！`,
+              vegasCall: `極速快開 ${col}-${num}！好運閃電降臨！`
             };
           });
         }
         if (mode === "classic_75") {
+          const cols = ["B", "I", "N", "G", "O"];
           return Array.from({ length: 75 }, (_, i) => {
             const num = i + 1;
-            const col = num <= 15 ? "B" : num <= 30 ? "I" : num <= 45 ? "N" : num <= 60 ? "G" : "O";
+            const col = cols[Math.floor((num - 1) / 15)];
             return {
               id: String(num),
               column: col,
               term: String(num),
-              riddle: `美式拉斯維加斯經典球號【${col}-${num}】！請在 ${col} 欄尋找數字 ${num}！`,
-              vegasCall: `Ladies & Gentlemen！開出的是 ${col}-${num}！`
+              riddle: `美式拉斯維加斯球號：${col}-${num}！請在 ${col} 欄尋找號碼！`,
+              vegasCall: `拉斯維加斯搖出 ${col}-${num}！請蓋上黃金籌碼章！`
             };
           });
         }
         return this.session.deckItems || BUILTIN_THEMES.ai_marketing.items;
       }
 
-      async drawNextBall() {
+      async drawNextBall(isManualClick = false) {
+        // 防護 1：若非手動點擊（即來自計時器），但自動開獎狀態已被關閉，立即終止並清除計時器！
+        if (!isManualClick && (!this.autoDrawTimer || !this.session.isAutoDrawing)) {
+          this.clearLocalDrawTimersOnly();
+          return;
+        }
+
+        // 防護 2：避免連點或計時重疊造成同時搖出多顆球
+        if (this.isDrawingLock) return;
+
         const fullPool = this.getFullPoolForCurrentMode();
         const remaining = fullPool.filter(item => !this.session.drawnBalls.includes(item.id));
 
+        // 防護 3：當一輪球全部抽完時，強制煞車並鎖定！
         if (remaining.length === 0) {
-          this.stopAutoDraw();
-          this.showToast("🎉 本場所有球號已全部搖出！請重置開啟新局。", "amber");
+          this.emergencyStopAllDraws(true);
+          this.showToast("🎉 本場所有球號已全部搖出完畢！自動開獎已完全停止。", "amber");
           return;
         }
+
+        this.isDrawingLock = true;
+        const currentRoundSnapshot = this.session.roundId;
+        const currentBrakeSnapshot = this.session.brakeToken || 0;
 
         const ballEl = document.getElementById("stageBallContainer");
         if (ballEl) {
@@ -2196,15 +2271,47 @@ service cloud.firestore {
         }
         this.sound.playRollSound();
 
-        setTimeout(async () => {
+        if (this.pendingDrawTimeout) clearTimeout(this.pendingDrawTimeout);
+
+        this.pendingDrawTimeout = setTimeout(async () => {
+          this.pendingDrawTimeout = null;
+          this.isDrawingLock = false;
+
+          // 如果在動畫期間老師按了「強制停止」或「重置新局」，直接取消這次出球！
+          if (
+            this.session.roundId !== currentRoundSnapshot ||
+            (this.session.brakeToken || 0) !== currentBrakeSnapshot ||
+            (!isManualClick && !this.autoDrawTimer)
+          ) {
+            if (ballEl) ballEl.classList.remove("animate-cage-spin");
+            return;
+          }
+
           if (ballEl) {
             ballEl.classList.remove("animate-cage-spin");
             ballEl.classList.add("animate-ball-pop");
           }
 
-          const picked = remaining[Math.floor(Math.random() * remaining.length)];
+          // 重新確認剩餘球池，確保絕不重複開球
+          const freshRemaining = this.getFullPoolForCurrentMode().filter(
+            item => !this.session.drawnBalls.includes(item.id)
+          );
+          if (freshRemaining.length === 0) {
+            this.emergencyStopAllDraws(true);
+            return;
+          }
+
+          const picked = freshRemaining[Math.floor(Math.random() * freshRemaining.length)];
           this.session.drawnBalls.push(picked.id);
           this.session.currentBall = picked;
+
+          // 若抽完這一顆剛好滿局（一輪結束），立即自動停止計時器！
+          if (freshRemaining.length === 1) {
+            this.clearLocalDrawTimersOnly();
+            this.session.isAutoDrawing = false;
+            this.session.autoDrawHostId = "";
+            this.showToast("🏁 本輪最後一顆球已開出！已自動停止搖球。", "emerald");
+          }
 
           if (this.autoDaub) {
             this.applyAutoDaubOnMyCard();
@@ -2235,12 +2342,211 @@ service cloud.firestore {
               const sys = "你是拉斯維加斯賭場與台灣彩券行金牌開獎主播，說話幽默押韻、充滿喜氣，限 35 字內（不要直接講出謎底答案）。";
               const prompt = `剛剛搖出題目（提示：${picked.riddle}）。目前場上有 ${preBingoPlayers} 位玩家已經聽牌。請給出一句超嗨的現場開獎助威台詞！`;
               const text = await this.callGeminiAPI(prompt, sys);
-              if (text) {
+              if (text && this.session.currentBall && this.session.currentBall.id === picked.id) {
                 document.getElementById("stageAiCommentary").textContent = `「${text.trim()}」`;
               }
             } catch (e) {}
           }
-        }, 360);
+        }, 320);
+      }
+
+      togglePauseOnBingo(checked) {
+        this.session.pauseOnBingo = Boolean(checked);
+        this.pushSessionToCloud();
+        this.showToast(checked ? "🛡️ 已開啟：有人 BINGO 時自動暫停開獎" : "已關閉中獎自動暫停", "amber");
+      }
+
+      clearLocalDrawTimersOnly() {
+        if (this.autoDrawTimer) {
+          clearInterval(this.autoDrawTimer);
+          this.autoDrawTimer = null;
+        }
+        if (this.countdownTickTimer) {
+          clearInterval(this.countdownTickTimer);
+          this.countdownTickTimer = null;
+        }
+        if (this.pendingDrawTimeout) {
+          clearTimeout(this.pendingDrawTimeout);
+          this.pendingDrawTimeout = null;
+        }
+        this.isDrawingLock = false;
+        const ballEl = document.getElementById("stageBallContainer");
+        if (ballEl) ballEl.classList.remove("animate-cage-spin");
+        const wrap = document.getElementById("stageCountdownBarWrap");
+        if (wrap) wrap.classList.add("hidden");
+        this.updateAutoDrawUI();
+      }
+
+      emergencyStopAllDraws(silent = false) {
+        this.clearLocalDrawTimersOnly();
+        this.session.isAutoDrawing = false;
+        this.session.autoDrawHostId = "";
+        this.session.brakeToken = (this.session.brakeToken || 0) + 1;
+        this.lastSeenBrakeToken = this.session.brakeToken;
+        if ("speechSynthesis" in window) {
+          try { window.speechSynthesis.cancel(); } catch (e) {}
+        }
+        this.updateAutoDrawUI();
+        this.pushSessionToCloud();
+        this.renderAll();
+        if (!silent) {
+          this.showToast("🛑 已強制停止全場所有自動開球計時器！目前為純手動控制模式。", "rose");
+        }
+      }
+
+      setAutoDrawInterval(seconds) {
+        const parsed = Math.max(3, Math.min(300, parseInt(seconds, 10) || 20));
+        this.session.autoDrawIntervalSec = parsed;
+        this.remainingSec = parsed;
+
+        const customInput = document.getElementById("customDrawIntervalInput");
+        if (customInput) customInput.value = parsed;
+
+        this.updateAutoDrawUI();
+        this.pushSessionToCloud();
+
+        if (this.autoDrawTimer) {
+          this.startAutoDrawLoop();
+          this.showToast(`⏱️ 自動開獎間隔已即時更新為每 ${parsed} 秒一球！`, "emerald");
+        } else {
+          this.showToast(`⏱️ 後台自動開獎秒數已設定為 ${parsed} 秒（目前為手動模式，點擊「啟動自動開獎」才會開始倒數）！`, "amber");
+        }
+      }
+
+      startAutoDrawLoop() {
+        this.clearLocalDrawTimersOnly();
+
+        const intervalSec = this.session.autoDrawIntervalSec || 20;
+        this.remainingSec = intervalSec;
+        this.session.isAutoDrawing = true;
+        this.session.autoDrawHostId = this.playerId;
+        this.pushSessionToCloud();
+        this.updateAutoDrawUI();
+
+        const wrap = document.getElementById("stageCountdownBarWrap");
+        if (wrap) wrap.classList.remove("hidden");
+
+        this.countdownTickTimer = setInterval(() => {
+          if (!this.session.isAutoDrawing) {
+            this.clearLocalDrawTimersOnly();
+            return;
+          }
+          this.remainingSec = Math.max(0, this.remainingSec - 1);
+          this.updateAutoDrawUI();
+        }, 1000);
+
+        this.autoDrawTimer = setInterval(() => {
+          if (!this.session.isAutoDrawing) {
+            this.clearLocalDrawTimersOnly();
+            return;
+          }
+          const fullPool = this.getFullPoolForCurrentMode();
+          if (this.session.drawnBalls.length >= fullPool.length) {
+            this.emergencyStopAllDraws(true);
+            this.showToast("🏁 本局所有球號皆已開出，自動開獎已停止！", "amber");
+            return;
+          }
+          this.remainingSec = this.session.autoDrawIntervalSec || 20;
+          this.updateAutoDrawUI();
+          this.drawNextBall(false);
+        }, intervalSec * 1000);
+      }
+
+      updateAutoDrawUI() {
+        const intervalSec = this.session.autoDrawIntervalSec || 20;
+        const isRunning = Boolean(this.autoDrawTimer) || Boolean(this.session.isAutoDrawing);
+        const fullPool = this.getFullPoolForCurrentMode();
+        const isPoolExhausted = this.session.drawnBalls.length >= fullPool.length;
+
+        const manualBtn = document.getElementById("stageManualDrawBtn");
+        if (manualBtn) {
+          manualBtn.disabled = isPoolExhausted;
+          manualBtn.innerHTML = isPoolExhausted
+            ? `<i class="fa-solid fa-flag-checkered"></i> 本輪已全數開完 (${fullPool.length}/${fullPool.length})`
+            : `<i class="fa-solid fa-hand-pointer"></i> 手動搖下一球 (${this.session.drawnBalls.length}/${fullPool.length})`;
+          manualBtn.className = isPoolExhausted
+            ? "flex-1 py-3 px-4 rounded-xl bg-slate-800 text-slate-500 font-black text-sm border border-slate-700 cursor-not-allowed flex items-center justify-center gap-2"
+            : "flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:brightness-110 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/30 transition flex items-center justify-center gap-2";
+        }
+
+        const stageIcon = document.getElementById("stageAutoDrawIcon");
+        if (stageIcon) {
+          stageIcon.className = isRunning ? "fa-solid fa-pause" : "fa-solid fa-play";
+        }
+
+        const stageLbl = document.getElementById("stageAutoDrawLabel");
+        if (stageLbl) {
+          stageLbl.textContent = isRunning
+            ? `暫停自動 (${this.remainingSec}s/${intervalSec}s)`
+            : `啟動自動開獎 (${intervalSec}秒)`;
+        }
+
+        const stageBtn = document.getElementById("stageAutoDrawBtn");
+        if (stageBtn) {
+          stageBtn.className = isRunning
+            ? "py-3 px-3.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border-2 border-amber-400 text-amber-300 font-black text-xs sm:text-sm transition flex items-center gap-1.5 shadow-lg"
+            : "py-3 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold text-xs sm:text-sm transition flex items-center gap-1.5";
+        }
+
+        const hostLbl = document.getElementById("hostAutoDrawBtnLabel");
+        if (hostLbl) {
+          hostLbl.textContent = isRunning
+            ? `⏸️ 暫停自動開獎 (倒數 ${this.remainingSec}s)`
+            : `啟動自動開獎 (每 ${intervalSec} 秒)`;
+        }
+
+        const hostBtn = document.getElementById("hostAutoDrawBtn");
+        if (hostBtn) {
+          hostBtn.className = isRunning
+            ? "py-3 px-4 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border-2 border-amber-400 text-amber-300 font-black text-xs sm:text-sm transition shadow-lg"
+            : "py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs sm:text-sm transition";
+        }
+
+        const badge = document.getElementById("hostIntervalDisplayBadge");
+        if (badge) badge.textContent = intervalSec;
+
+        [10, 15, 20, 30, 45, 60].forEach(sec => {
+          const b = document.getElementById(`intBtn-${sec}`);
+          if (b) {
+            b.className = (intervalSec === sec)
+              ? "px-2.5 py-1.5 rounded-lg border-2 border-amber-400 bg-amber-500/20 text-amber-300 text-xs font-mono font-black transition"
+              : "px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:border-amber-400 text-xs font-mono font-bold transition";
+          }
+        });
+
+        const cdWrap = document.getElementById("stageCountdownBarWrap");
+        if (cdWrap) cdWrap.classList.toggle("hidden", !isRunning);
+
+        const cdText = document.getElementById("stageCountdownText");
+        if (cdText) cdText.textContent = `${this.remainingSec} 秒`;
+
+        const cdBar = document.getElementById("stageCountdownProgress");
+        if (cdBar) {
+          const pct = Math.max(0, Math.min(100, (this.remainingSec / intervalSec) * 100));
+          cdBar.style.width = `${pct}%`;
+        }
+      }
+
+      toggleAutoDraw() {
+        const intervalSec = this.session.autoDrawIntervalSec || 20;
+        const isRunning = Boolean(this.autoDrawTimer) || Boolean(this.session.isAutoDrawing);
+        if (isRunning) {
+          this.emergencyStopAllDraws(true);
+          this.showToast("⏸️ 已暫停自動開獎！現在不會再自動搖球。", "amber");
+        } else {
+          const fullPool = this.getFullPoolForCurrentMode();
+          if (this.session.drawnBalls.length >= fullPool.length) {
+            this.showToast("⚠️ 本輪球數已全數開完，請先點擊「重置新局」再啟動！", "rose");
+            return;
+          }
+          this.drawNextBall(true);
+          this.startAutoDrawLoop();
+          this.showToast(`▶️ 已啟動每 ${intervalSec} 秒自動開獎！隨時可點紅色「強制停止」煞車。`, "emerald");
+        }
+      }
+
+      stopAutoDraw() {
+        this.emergencyStopAllDraws(true);
       }
 
       async generateCustomAiDeck() {
@@ -2386,129 +2692,6 @@ service cloud.firestore {
           bot.preBingoCount = stats.preBingoCount;
           bot.isWinner = stats.isWinner;
         }
-      }
-
-      setAutoDrawInterval(seconds) {
-        const parsed = Math.max(3, Math.min(300, parseInt(seconds, 10) || 20));
-        this.session.autoDrawIntervalSec = parsed;
-        this.remainingSec = parsed;
-
-        const customInput = document.getElementById("customDrawIntervalInput");
-        if (customInput) customInput.value = parsed;
-
-        this.updateAutoDrawUI();
-        this.pushSessionToCloud();
-
-        // 若目前正在自動開獎中，立即套用新的後台設定秒數重新計時
-        if (this.autoDrawTimer) {
-          this.startAutoDrawLoop();
-          this.showToast(`⏱️ 自動開獎間隔已即時更新為每 ${parsed} 秒一球！`, "emerald");
-        } else {
-          this.showToast(`⏱️ 後台自動開獎秒數已設定為 ${parsed} 秒！`, "amber");
-        }
-      }
-
-      startAutoDrawLoop() {
-        if (this.autoDrawTimer) clearInterval(this.autoDrawTimer);
-        if (this.countdownTickTimer) clearInterval(this.countdownTickTimer);
-
-        const intervalSec = this.session.autoDrawIntervalSec || 20;
-        this.remainingSec = intervalSec;
-        this.updateAutoDrawUI();
-
-        const wrap = document.getElementById("stageCountdownBarWrap");
-        if (wrap) wrap.classList.remove("hidden");
-
-        this.countdownTickTimer = setInterval(() => {
-          this.remainingSec = Math.max(0, this.remainingSec - 1);
-          this.updateAutoDrawUI();
-        }, 1000);
-
-        this.autoDrawTimer = setInterval(() => {
-          this.remainingSec = this.session.autoDrawIntervalSec || 20;
-          this.updateAutoDrawUI();
-          this.drawNextBall();
-        }, intervalSec * 1000);
-      }
-
-      updateAutoDrawUI() {
-        const intervalSec = this.session.autoDrawIntervalSec || 20;
-        const isRunning = Boolean(this.autoDrawTimer);
-
-        const stageLbl = document.getElementById("stageAutoDrawLabel");
-        if (stageLbl) {
-          stageLbl.textContent = isRunning
-            ? `自動開獎中 (${this.remainingSec}s / ${intervalSec}s)`
-            : `自動開獎 (${intervalSec}秒): 關`;
-        }
-
-        const stageBtn = document.getElementById("stageAutoDrawBtn");
-        if (stageBtn) {
-          stageBtn.className = isRunning
-            ? "py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 border border-rose-400 text-white font-black text-xs sm:text-sm transition flex items-center gap-1.5 shadow-lg shadow-rose-600/30"
-            : "py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold text-xs sm:text-sm transition flex items-center gap-1.5";
-        }
-
-        const hostLbl = document.getElementById("hostAutoDrawBtnLabel");
-        if (hostLbl) {
-          hostLbl.textContent = isRunning
-            ? `⏸️ 暫停自動開獎 (倒數 ${this.remainingSec}s)`
-            : `自動開獎 (每 ${intervalSec} 秒)`;
-        }
-
-        const hostBtn = document.getElementById("hostAutoDrawBtn");
-        if (hostBtn) {
-          hostBtn.className = isRunning
-            ? "py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 border border-rose-400 text-white font-black text-xs sm:text-sm transition shadow-lg"
-            : "py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs sm:text-sm transition";
-        }
-
-        const badge = document.getElementById("hostIntervalDisplayBadge");
-        if (badge) badge.textContent = intervalSec;
-
-        [10, 15, 20, 30, 45, 60].forEach(sec => {
-          const b = document.getElementById(`intBtn-${sec}`);
-          if (b) {
-            b.className = (intervalSec === sec)
-              ? "px-2.5 py-1.5 rounded-lg border-2 border-amber-400 bg-amber-500/20 text-amber-300 text-xs font-mono font-black transition"
-              : "px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:border-amber-400 text-xs font-mono font-bold transition";
-          }
-        });
-
-        const cdText = document.getElementById("stageCountdownText");
-        if (cdText) cdText.textContent = `${this.remainingSec} 秒`;
-
-        const cdBar = document.getElementById("stageCountdownProgress");
-        if (cdBar) {
-          const pct = Math.max(0, Math.min(100, (this.remainingSec / intervalSec) * 100));
-          cdBar.style.width = `${pct}%`;
-        }
-      }
-
-      toggleAutoDraw() {
-        const intervalSec = this.session.autoDrawIntervalSec || 20;
-        if (this.autoDrawTimer) {
-          this.stopAutoDraw();
-          this.showToast("⏸️ 已暫停自動搖珠開獎", "slate");
-        } else {
-          this.drawNextBall();
-          this.startAutoDrawLoop();
-          this.showToast(`▶️ 已啟動每 ${intervalSec} 秒自動開獎！`, "emerald");
-        }
-      }
-
-      stopAutoDraw() {
-        if (this.autoDrawTimer) {
-          clearInterval(this.autoDrawTimer);
-          this.autoDrawTimer = null;
-        }
-        if (this.countdownTickTimer) {
-          clearInterval(this.countdownTickTimer);
-          this.countdownTickTimer = null;
-        }
-        const wrap = document.getElementById("stageCountdownBarWrap");
-        if (wrap) wrap.classList.add("hidden");
-        this.updateAutoDrawUI();
       }
 
       changeGameMode(mode) {
